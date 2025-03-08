@@ -4,8 +4,10 @@ import br.com.matteusmoreno.garage_manager.response.ProductDetailsResponse;
 import br.com.matteusmoreno.garage_manager.domain.Product;
 import br.com.matteusmoreno.garage_manager.request.CreateProductRequest;
 import br.com.matteusmoreno.garage_manager.service.ProductService;
+import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.UriInfo;
@@ -28,5 +30,13 @@ public class ProductController {
         URI uri = uriInfo.getAbsolutePathBuilder().build();
 
         return Response.created(uri).entity(new ProductDetailsResponse(product)).build();
+    }
+
+    @GET
+    @Path("/find/{id}")
+    public Response findById(Long id) {
+        Product product = productService.findProductById(id);
+
+        return Response.ok(new ProductDetailsResponse(product)).build();
     }
 }

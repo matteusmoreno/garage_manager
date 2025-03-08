@@ -1,5 +1,6 @@
 package br.com.matteusmoreno.garage_manager.service;
 
+import br.com.matteusmoreno.garage_manager.exception.exception_handler.ProductNotFoundException;
 import br.com.matteusmoreno.garage_manager.ropository.ProductRepository;
 import br.com.matteusmoreno.garage_manager.domain.Product;
 import br.com.matteusmoreno.garage_manager.request.CreateProductRequest;
@@ -34,5 +35,12 @@ public class ProductService {
         productRepository.persist(product);
 
         return product;
+    }
+
+    public Product findProductById(Long id) {
+        if (productRepository.findById(id) == null) {
+            throw new ProductNotFoundException("Product not found");
+        }
+        return productRepository.findById(id);
     }
 }
