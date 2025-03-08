@@ -1,0 +1,17 @@
+services:
+  postgres-db-garage-manager:
+    image: postgres:14
+    container_name: postgres-db-garage-manager-container
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: garage_manager
+    ports:
+      - "5433:5432" # Mapeando a porta 5432 do container para a 5433 na máquina host
+    volumes:
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+      - postgres_data:/var/lib/postgresql/data # Persistência dos dados do banco
+
+volumes:
+  postgres_data:
+    driver: local
