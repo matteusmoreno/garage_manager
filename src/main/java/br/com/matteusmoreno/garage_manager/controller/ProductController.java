@@ -13,6 +13,7 @@ import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.UriInfo;
 
 import java.net.URI;
+import java.util.List;
 
 @Path("/products")
 public class ProductController {
@@ -33,10 +34,18 @@ public class ProductController {
     }
 
     @GET
-    @Path("/find/{id}")
+    @Path("/find-by-id/{id}")
     public Response findById(Long id) {
         Product product = productService.findProductById(id);
 
         return Response.ok(new ProductDetailsResponse(product)).build();
+    }
+
+    @GET
+    @Path("/find-by-name/{name}")
+    public Response findByNameContaining(String name) {
+        List<ProductDetailsResponse> products = productService.findProductsByNameContaining(name);
+
+        return Response.ok(products).build();
     }
 }

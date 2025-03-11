@@ -4,6 +4,7 @@ import br.com.matteusmoreno.garage_manager.domain.Product;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 
 public record ProductDetailsResponse(
         Long id,
