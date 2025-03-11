@@ -54,4 +54,12 @@ public class ProductController {
 
         return Response.ok(response).build();
     }
+
+    @DELETE
+    @Path("/disable/{id}")
+    public Response disableProduct(Long id) {
+        productService.disableProductById(id);
+
+        return Response.noContent().build();
+    }
 }

@@ -1,11 +1,11 @@
 package br.com.matteusmoreno.garage_manager.service;
 
+import br.com.matteusmoreno.garage_manager.domain.Product;
 import br.com.matteusmoreno.garage_manager.exception.exception_handler.ProductNotFoundException;
+import br.com.matteusmoreno.garage_manager.request.CreateProductRequest;
 import br.com.matteusmoreno.garage_manager.request.UpdateProductRequest;
 import br.com.matteusmoreno.garage_manager.response.ProductDetailsResponse;
 import br.com.matteusmoreno.garage_manager.ropository.ProductRepository;
-import br.com.matteusmoreno.garage_manager.domain.Product;
-import br.com.matteusmoreno.garage_manager.request.CreateProductRequest;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.transaction.Transactional;
 
@@ -93,5 +93,18 @@ public class ProductService {
         productRepository.persist(product);
 
         return new ProductDetailsResponse(product);
+    }
+
+    @Transactional
+    public void disableProductById(Long id) {
+        if (productRepository.findById(id) == null) {
+            throw new ProductNotFoundException("Product not found");
+        }
+
+        Product product = findProductById(id);
+
+        product.setDeletedAt(LocalDateTime.now());
+        product.setIsActive(false);
+        productRepository.persist(product);
     }
 }
