@@ -1,13 +1,11 @@
 package br.com.matteusmoreno.garage_manager.controller;
 
+import br.com.matteusmoreno.garage_manager.request.UpdateProductRequest;
 import br.com.matteusmoreno.garage_manager.response.ProductDetailsResponse;
 import br.com.matteusmoreno.garage_manager.domain.Product;
 import br.com.matteusmoreno.garage_manager.request.CreateProductRequest;
 import br.com.matteusmoreno.garage_manager.service.ProductService;
-import jakarta.ws.rs.GET;
-import jakarta.ws.rs.POST;
-import jakarta.ws.rs.Path;
-import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.UriInfo;
@@ -47,5 +45,13 @@ public class ProductController {
         List<ProductDetailsResponse> products = productService.findProductsByNameContaining(name);
 
         return Response.ok(products).build();
+    }
+
+    @PUT
+    @Path("/update")
+    public Response update(UpdateProductRequest request) {
+        ProductDetailsResponse response = productService.updateProduct(request);
+
+        return Response.ok(response).build();
     }
 }

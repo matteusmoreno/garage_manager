@@ -1,6 +1,7 @@
 package br.com.matteusmoreno.garage_manager.service;
 
 import br.com.matteusmoreno.garage_manager.exception.exception_handler.ProductNotFoundException;
+import br.com.matteusmoreno.garage_manager.request.UpdateProductRequest;
 import br.com.matteusmoreno.garage_manager.response.ProductDetailsResponse;
 import br.com.matteusmoreno.garage_manager.ropository.ProductRepository;
 import br.com.matteusmoreno.garage_manager.domain.Product;
@@ -64,4 +65,33 @@ public class ProductService {
                 .toList();
     }
 
+    @Transactional
+    public ProductDetailsResponse updateProduct(UpdateProductRequest request) {
+        if (productRepository.findById(request.id()) == null) {
+            throw new ProductNotFoundException("Product not found");
+        }
+
+        Product product = findProductById(request.id());
+
+        if (request.name() != null) {
+            product.setName(request.name());
+        }
+        if (request.description() != null) {
+            product.setDescription(request.description());
+        }
+        if (request.brand() != null) {
+            product.setBrand(request.brand().toUpperCase());
+        }
+        if (request.purchasePrice() != null) {
+            product.setPurchasePrice(request.purchasePrice());
+        }
+        if (request.salePrice() != null) {
+            product.setSalePrice(request.salePrice());
+        }
+
+        product.setUpdatedAt(LocalDateTime.now());
+        productRepository.persist(product);
+
+        return new ProductDetailsResponse(product);
+    }
 }
