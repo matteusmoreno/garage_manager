@@ -7,6 +7,8 @@ import br.com.matteusmoreno.garage_manager.request.CreateProductRequest;
 import br.com.matteusmoreno.garage_manager.request.UpdateProductRequest;
 import br.com.matteusmoreno.garage_manager.response.ProductDetailsResponse;
 import br.com.matteusmoreno.garage_manager.ropository.ProductRepository;
+import io.micrometer.core.instrument.MeterRegistry;
+import io.quarkus.logging.Log;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.transaction.Transactional;
 
@@ -17,9 +19,11 @@ import java.util.List;
 public class ProductService {
 
     private final ProductRepository productRepository;
+    private final MeterRegistry meterRegistry;
 
-    public ProductService(ProductRepository productRepository) {
+    public ProductService(ProductRepository productRepository, MeterRegistry meterRegistry) {
         this.productRepository = productRepository;
+        this.meterRegistry = meterRegistry;
     }
 
     @Transactional
@@ -36,16 +40,26 @@ public class ProductService {
                 .isActive(true)
                 .build();
 
-        productRepository.persist(product);
+        Log.info("Creating product: " + product.getName());
+        meterRegistry.counter("product_created").increment();
 
+        productRepository.persist(product);
         return product;
     }
 
     public Product findProductById(Long id) {
         if (productRepository.findById(id) == null) {
+            meterRegistry.counter("product_not_found").increment();
             throw new ProductNotFoundException("Product not found");
         }
-        return productRepository.findById(id);
+
+        Product product = productRepository.findById(id);
+
+        Log.info("Finding product by id: " + id);
+        Log.info("Product found: " + product.getName());
+        meterRegistry.counter("product_found_by_id").increment();
+
+        return product;
     }
 
 
@@ -58,8 +72,12 @@ public class ProductService {
         List<Product> products = productRepository.findByNameContainingIgnoreCasePaginated(keywords, page, pageSize);
 
         if (products.isEmpty()) {
+            meterRegistry.counter("product_not_found").increment();
             throw new ProductNotFoundException("Product not found");
         }
+
+        Log.info("Products found: " + products.size());
+        meterRegistry.counter("product_found_by_name").increment();
 
         return products.stream()
                 .map(ProductDetailsResponse::new)
@@ -69,6 +87,7 @@ public class ProductService {
     @Transactional
     public ProductDetailsResponse updateProduct(UpdateProductRequest request) {
         if (productRepository.findById(request.id()) == null) {
+            meterRegistry.counter("product_not_found").increment();
             throw new ProductNotFoundException("Product not found");
         }
 
@@ -90,6 +109,9 @@ public class ProductService {
             product.setSalePrice(request.salePrice());
         }
 
+        Log.info("Updating product: " + product.getName());
+        meterRegistry.counter("product_updated").increment();
+
         product.setUpdatedAt(LocalDateTime.now());
         productRepository.persist(product);
 
@@ -99,6 +121,7 @@ public class ProductService {
     @Transactional
     public void disableProductById(Long id) {
         if (productRepository.findById(id) == null) {
+            meterRegistry.counter("product_not_found").increment();
             throw new ProductNotFoundException("Product not found");
         }
 
@@ -106,15 +129,21 @@ public class ProductService {
 
         product.setDeletedAt(LocalDateTime.now());
         product.setIsActive(false);
+
+        Log.info("Disabling product: " + product.getName());
+        meterRegistry.counter("product_disabled").increment();
+
         productRepository.persist(product);
     }
     
     @Transactional
     public ProductDetailsResponse enableProductById(Long id) {
         if (productRepository.findById(id) == null) {
+            meterRegistry.counter("product_not_found").increment();
             throw new ProductNotFoundException("Product not found");
         }
         if (productRepository.findById(id).getIsActive()) {
+            meterRegistry.counter("product_already_enabled").increment();
             throw new ProductIsAlreadyEnabledException("Product is already enabled");
         }
 
@@ -125,7 +154,9 @@ public class ProductService {
         product.setIsActive(true);
         productRepository.persist(product);
 
-        return new ProductDetailsResponse(product);
+        Log.info("Enabling product: " + product.getName());
+        meterRegistry.counter("product_enabled").increment();
 
+        return new ProductDetailsResponse(product);
     }
 }
