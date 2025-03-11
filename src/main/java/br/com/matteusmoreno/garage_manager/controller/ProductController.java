@@ -62,4 +62,12 @@ public class ProductController {
 
         return Response.noContent().build();
     }
+
+    @PATCH
+    @Path("/enable/{id}")
+    public Response enableProduct(Long id) {
+        ProductDetailsResponse response = productService.enableProductById(id);
+
+        return Response.ok(response).build();
+    }
 }

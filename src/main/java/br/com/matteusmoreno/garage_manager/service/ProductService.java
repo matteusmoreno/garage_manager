@@ -1,7 +1,8 @@
 package br.com.matteusmoreno.garage_manager.service;
 
 import br.com.matteusmoreno.garage_manager.domain.Product;
-import br.com.matteusmoreno.garage_manager.exception.exception_handler.ProductNotFoundException;
+import br.com.matteusmoreno.garage_manager.exception.exception_class.ProductIsAlreadyEnabledException;
+import br.com.matteusmoreno.garage_manager.exception.exception_class.ProductNotFoundException;
 import br.com.matteusmoreno.garage_manager.request.CreateProductRequest;
 import br.com.matteusmoreno.garage_manager.request.UpdateProductRequest;
 import br.com.matteusmoreno.garage_manager.response.ProductDetailsResponse;
@@ -106,5 +107,25 @@ public class ProductService {
         product.setDeletedAt(LocalDateTime.now());
         product.setIsActive(false);
         productRepository.persist(product);
+    }
+    
+    @Transactional
+    public ProductDetailsResponse enableProductById(Long id) {
+        if (productRepository.findById(id) == null) {
+            throw new ProductNotFoundException("Product not found");
+        }
+        if (productRepository.findById(id).getIsActive()) {
+            throw new ProductIsAlreadyEnabledException("Product is already enabled");
+        }
+
+        Product product = findProductById(id);
+
+        product.setUpdatedAt(LocalDateTime.now());
+        product.setDeletedAt(null);
+        product.setIsActive(true);
+        productRepository.persist(product);
+
+        return new ProductDetailsResponse(product);
+
     }
 }

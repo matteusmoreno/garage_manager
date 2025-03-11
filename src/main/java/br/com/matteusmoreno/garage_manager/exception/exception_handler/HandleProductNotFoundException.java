@@ -1,6 +1,6 @@
-package br.com.matteusmoreno.garage_manager.exception.exception_class;
+package br.com.matteusmoreno.garage_manager.exception.exception_handler;
 
-import br.com.matteusmoreno.garage_manager.exception.exception_handler.ProductNotFoundException;
+import br.com.matteusmoreno.garage_manager.exception.exception_class.ProductNotFoundException;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.ext.ExceptionMapper;
 import jakarta.ws.rs.ext.Provider;
