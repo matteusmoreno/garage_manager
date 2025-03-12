@@ -1,6 +1,7 @@
 package br.com.matteusmoreno.garage_manager.service;
 
 import br.com.matteusmoreno.garage_manager.domain.Product;
+import br.com.matteusmoreno.garage_manager.exception.exception_class.ProductIsAlreadyDisabledException;
 import br.com.matteusmoreno.garage_manager.exception.exception_class.ProductIsAlreadyEnabledException;
 import br.com.matteusmoreno.garage_manager.exception.exception_class.ProductNotFoundException;
 import br.com.matteusmoreno.garage_manager.request.CreateProductRequest;
@@ -86,11 +87,6 @@ public class ProductService {
 
     @Transactional
     public ProductDetailsResponse updateProduct(UpdateProductRequest request) {
-        if (productRepository.findById(request.id()) == null) {
-            meterRegistry.counter("product_not_found").increment();
-            throw new ProductNotFoundException("Product not found");
-        }
-
         Product product = findProductById(request.id());
 
         if (request.name() != null) {
@@ -120,12 +116,12 @@ public class ProductService {
 
     @Transactional
     public void disableProductById(Long id) {
-        if (productRepository.findById(id) == null) {
-            meterRegistry.counter("product_not_found").increment();
-            throw new ProductNotFoundException("Product not found");
-        }
-
         Product product = findProductById(id);
+
+        if (!product.getIsActive()) {
+            meterRegistry.counter("product_already_disabled").increment();
+            throw new ProductIsAlreadyDisabledException("Product is already disabled");
+        }
 
         product.setDeletedAt(LocalDateTime.now());
         product.setIsActive(false);
@@ -138,16 +134,12 @@ public class ProductService {
     
     @Transactional
     public ProductDetailsResponse enableProductById(Long id) {
-        if (productRepository.findById(id) == null) {
-            meterRegistry.counter("product_not_found").increment();
-            throw new ProductNotFoundException("Product not found");
-        }
-        if (productRepository.findById(id).getIsActive()) {
+        Product product = findProductById(id);
+
+        if (product.getIsActive()) {
             meterRegistry.counter("product_already_enabled").increment();
             throw new ProductIsAlreadyEnabledException("Product is already enabled");
         }
-
-        Product product = findProductById(id);
 
         product.setUpdatedAt(LocalDateTime.now());
         product.setDeletedAt(null);
