@@ -7,19 +7,13 @@ import br.com.matteusmoreno.garage_manager.exception.exception_class.CustomerAlr
 import br.com.matteusmoreno.garage_manager.exception.exception_class.InvalidDateException;
 import br.com.matteusmoreno.garage_manager.request.CreateCustomerRequest;
 import br.com.matteusmoreno.garage_manager.ropository.CustomerRepository;
-import br.com.safeguard.check.SafeguardCheck;
-import br.com.safeguard.interfaces.Check;
-import br.com.safeguard.types.ParametroTipo;
 import io.micrometer.core.instrument.MeterRegistry;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.transaction.Transactional;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeParseException;
-import java.time.format.ResolverStyle;
-import java.util.Locale;
+
+import static br.com.matteusmoreno.garage_manager.utils.UtilsService.*;
 
 @ApplicationScoped
 public class CustomerService {
@@ -71,33 +65,6 @@ public class CustomerService {
         customerRepository.persist(customer);
 
         return customer;
-    }
-
-    private Integer calculateAge(String birthDateStr) {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-
-        LocalDate birthDate = LocalDate.parse(birthDateStr, formatter);
-        LocalDate currentDate = LocalDate.now();
-
-        return currentDate.getYear() - birthDate.getYear();
-    }
-
-    private Boolean cpfValidation(String cpf) {
-        Check check = new SafeguardCheck();
-        return !check.elementOf(cpf, ParametroTipo.CPF).validate().hasError();
-    }
-
-
-    private Boolean dateValidation(String birthDateStr) {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/uuuu")
-                .withResolverStyle(ResolverStyle.STRICT)
-                .withLocale(Locale.getDefault());
-        try {
-            LocalDate.parse(birthDateStr, formatter);
-            return true;
-        } catch (DateTimeParseException e) {
-            return false;
-        }
     }
 
 }
