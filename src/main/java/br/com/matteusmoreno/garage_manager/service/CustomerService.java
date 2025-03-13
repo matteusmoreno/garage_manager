@@ -4,6 +4,7 @@ import br.com.matteusmoreno.garage_manager.domain.Address;
 import br.com.matteusmoreno.garage_manager.domain.Customer;
 import br.com.matteusmoreno.garage_manager.exception.exception_class.CpfInvalidException;
 import br.com.matteusmoreno.garage_manager.exception.exception_class.CustomerAlreadyExistsException;
+import br.com.matteusmoreno.garage_manager.exception.exception_class.CustomerNotFoundException;
 import br.com.matteusmoreno.garage_manager.exception.exception_class.InvalidDateException;
 import br.com.matteusmoreno.garage_manager.request.CreateCustomerRequest;
 import br.com.matteusmoreno.garage_manager.ropository.CustomerRepository;
@@ -12,6 +13,7 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.transaction.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 import static br.com.matteusmoreno.garage_manager.utils.UtilsService.*;
 
@@ -66,5 +68,18 @@ public class CustomerService {
 
         return customer;
     }
+
+    public Customer findCustomerById(UUID id) {
+        if (customerRepository.findByUUID(id) == null) {
+            meterRegistry.counter("customer_not_found").increment();
+            throw new CustomerNotFoundException("Customer not found");
+        }
+
+        Customer customer = customerRepository.findByUUID(id);
+        meterRegistry.counter("customer_found_by_id").increment();
+
+        return customer;
+    }
+
 
 }

@@ -5,6 +5,7 @@ import br.com.matteusmoreno.garage_manager.response.ProductDetailsResponse;
 import br.com.matteusmoreno.garage_manager.domain.Product;
 import br.com.matteusmoreno.garage_manager.request.CreateProductRequest;
 import br.com.matteusmoreno.garage_manager.service.ProductService;
+import jakarta.validation.Valid;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.Response;
@@ -24,7 +25,7 @@ public class ProductController {
 
     @POST
     @Path("/create")
-    public Response create(CreateProductRequest request, @Context UriInfo uriInfo) {
+    public Response create(@Valid CreateProductRequest request, @Context UriInfo uriInfo) {
         Product product = productService.createProduct(request);
         URI uri = uriInfo.getAbsolutePathBuilder().build();
 
@@ -49,7 +50,7 @@ public class ProductController {
 
     @PUT
     @Path("/update")
-    public Response update(UpdateProductRequest request) {
+    public Response update(@Valid UpdateProductRequest request) {
         ProductDetailsResponse response = productService.updateProduct(request);
 
         return Response.ok(response).build();
