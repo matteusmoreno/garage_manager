@@ -14,7 +14,7 @@ import java.util.Locale;
 @ApplicationScoped
 public class UtilsService {
 
-    public static Integer calculateAge(String birthDateStr) {
+    public Integer calculateAge(String birthDateStr) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
         LocalDate birthDate = LocalDate.parse(birthDateStr, formatter);
@@ -23,13 +23,13 @@ public class UtilsService {
         return currentDate.getYear() - birthDate.getYear();
     }
 
-    public static Boolean cpfValidation(String cpf) {
+    public Boolean cpfValidation(String cpf) {
         Check check = new SafeguardCheck();
         return !check.elementOf(cpf, ParametroTipo.CPF).validate().hasError();
     }
 
 
-    public static Boolean dateValidation(String birthDateStr) {
+    public Boolean dateValidation(String birthDateStr) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/uuuu")
                 .withResolverStyle(ResolverStyle.STRICT)
                 .withLocale(Locale.getDefault());

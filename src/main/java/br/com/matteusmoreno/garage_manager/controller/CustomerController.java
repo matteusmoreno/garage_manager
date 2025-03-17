@@ -2,12 +2,11 @@ package br.com.matteusmoreno.garage_manager.controller;
 
 import br.com.matteusmoreno.garage_manager.domain.Customer;
 import br.com.matteusmoreno.garage_manager.request.CreateCustomerRequest;
+import br.com.matteusmoreno.garage_manager.request.UpdateCustomerRequest;
 import br.com.matteusmoreno.garage_manager.response.CustomerDetailsResponse;
 import br.com.matteusmoreno.garage_manager.service.CustomerService;
 import jakarta.validation.Valid;
-import jakarta.ws.rs.GET;
-import jakarta.ws.rs.POST;
-import jakarta.ws.rs.Path;
+import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.UriInfo;
@@ -37,6 +36,30 @@ public class CustomerController {
     @Path("/find-by-id/{id}")
     public Response findById(UUID id) {
         Customer customer = customerService.findCustomerById(id);
+
+        return Response.ok(new CustomerDetailsResponse(customer)).build();
+    }
+
+    @PUT
+    @Path("/update")
+    public Response update(@Valid UpdateCustomerRequest request) {
+        Customer customer = customerService.updateCustomer(request);
+
+        return Response.ok(new CustomerDetailsResponse(customer)).build();
+    }
+
+    @DELETE
+    @Path("/disable/{id}")
+    public Response disable(UUID id) {
+        customerService.disableCustomerById(id);
+
+        return Response.noContent().build();
+    }
+
+    @PATCH
+    @Path("/enable/{id}")
+    public Response enable(UUID id) {
+        Customer customer = customerService.enableCustomerById(id);
 
         return Response.ok(new CustomerDetailsResponse(customer)).build();
     }
