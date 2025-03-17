@@ -41,7 +41,6 @@ public class ProductService {
                 .isActive(true)
                 .build();
 
-        Log.info("Creating product: " + product.getName());
         meterRegistry.counter("product_created").increment();
 
         productRepository.persist(product);
@@ -55,9 +54,6 @@ public class ProductService {
         }
 
         Product product = productRepository.findById(id);
-
-        Log.info("Finding product by id: " + id);
-        Log.info("Product found: " + product.getName());
         meterRegistry.counter("product_found_by_id").increment();
 
         return product;
@@ -77,7 +73,6 @@ public class ProductService {
             throw new ProductNotFoundException("Product not found");
         }
 
-        Log.info("Products found: " + products.size());
         meterRegistry.counter("product_found_by_name").increment();
 
         return products.stream()
@@ -105,7 +100,6 @@ public class ProductService {
             product.setSalePrice(request.salePrice());
         }
 
-        Log.info("Updating product: " + product.getName());
         meterRegistry.counter("product_updated").increment();
 
         product.setUpdatedAt(LocalDateTime.now());
@@ -126,7 +120,6 @@ public class ProductService {
         product.setDeletedAt(LocalDateTime.now());
         product.setIsActive(false);
 
-        Log.info("Disabling product: " + product.getName());
         meterRegistry.counter("product_disabled").increment();
 
         productRepository.persist(product);
@@ -146,7 +139,6 @@ public class ProductService {
         product.setIsActive(true);
         productRepository.persist(product);
 
-        Log.info("Enabling product: " + product.getName());
         meterRegistry.counter("product_enabled").increment();
 
         return new ProductDetailsResponse(product);
