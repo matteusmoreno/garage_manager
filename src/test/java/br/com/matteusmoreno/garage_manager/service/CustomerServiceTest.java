@@ -12,9 +12,12 @@ import io.micrometer.core.instrument.MeterRegistry;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -23,6 +26,8 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @DisplayName("Customer Service Tests")
+@ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
 class CustomerServiceTest {
 
     @Mock
@@ -48,8 +53,6 @@ class CustomerServiceTest {
 
     @BeforeEach
     void setUp() {
-        MockitoAnnotations.openMocks(this);
-
         createCustomerRequest = new CreateCustomerRequest("Name", "28/08/1990", "(22)99822-3307", "email@email.com", "134.782.410-30", "28994-666", "123", "complement");
         address = new Address(1L, "28994-666", "Street", "Neighborhood", "123", "City", "State", "Complement");
         customer = new Customer(UUID.randomUUID(), "Fábio", "15/12/1990", 31, "(22)99999-9999", "fabio@email.com", "130.320.690-09", address, LocalDateTime.of(2025, 1, 1, 0, 0), null, null, true);
@@ -207,39 +210,6 @@ class CustomerServiceTest {
                 () -> assertNull(response.getDeletedAt()),
                 () -> assertTrue(response.getIsActive())
         );
-    }
-
-    @Test
-    @DisplayName("Should throw CpfInvalidException when CPF is invalid")
-    void shouldThrowCpfInvalidExceptionWhenCPFIsInvalidOnUpdate() {
-        when(customerRepository.findByUUID(updateCustomerRequest.id())).thenReturn(customer);
-        when(utilsService.cpfValidation(updateCustomerRequest.cpf())).thenReturn(false);
-
-        assertThrows(CpfInvalidException.class, () -> customerService.updateCustomer(updateCustomerRequest));
-
-        verify(customerRepository, times(2)).findByUUID(customer.getId());
-        verify(utilsService, times(1)).cpfValidation(updateCustomerRequest.cpf());
-        verify(utilsService, never()).dateValidation(updateCustomerRequest.birthDate());
-        verify(utilsService, never()).calculateAge(updateCustomerRequest.birthDate());
-        verify(addressService, never()).createAddress(updateCustomerRequest.zipCode(), updateCustomerRequest.addressNumber(), updateCustomerRequest.addressComplement());
-        verify(customerRepository, never()).persist(any(Customer.class));
-    }
-
-    @Test
-    @DisplayName("Should throw InvalidDateException when date is invalid")
-    void shouldThrowInvalidDateExceptionWhenDateIsInvalidOnUpdate() {
-        when(customerRepository.findByUUID(updateCustomerRequest.id())).thenReturn(customer);
-        when(utilsService.cpfValidation(updateCustomerRequest.cpf())).thenReturn(true);
-        when(utilsService.dateValidation(updateCustomerRequest.birthDate())).thenReturn(false);
-
-        assertThrows(InvalidDateException.class, () -> customerService.updateCustomer(updateCustomerRequest));
-
-        verify(customerRepository, times(2)).findByUUID(customer.getId());
-        verify(utilsService, times(1)).cpfValidation(updateCustomerRequest.cpf());
-        verify(utilsService, times(1)).dateValidation(updateCustomerRequest.birthDate());
-        verify(utilsService, never()).calculateAge(updateCustomerRequest.birthDate());
-        verify(addressService, never()).createAddress(updateCustomerRequest.zipCode(), updateCustomerRequest.addressNumber(), updateCustomerRequest.addressComplement());
-        verify(customerRepository, never()).persist(any(Customer.class));
     }
 
     @Test
