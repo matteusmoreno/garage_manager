@@ -51,9 +51,9 @@ public class ProductController {
     @PUT
     @Path("/update")
     public Response update(@Valid UpdateProductRequest request) {
-        ProductDetailsResponse response = productService.updateProduct(request);
+        Product product = productService.updateProduct(request);
 
-        return Response.ok(response).build();
+        return Response.ok(new ProductDetailsResponse(product)).build();
     }
 
     @DELETE
@@ -67,8 +67,8 @@ public class ProductController {
     @PATCH
     @Path("/enable/{id}")
     public Response enableProduct(Long id) {
-        ProductDetailsResponse response = productService.enableProductById(id);
+        Product product = productService.enableProductById(id);
 
-        return Response.ok(response).build();
+        return Response.ok(new ProductDetailsResponse(product)).build();
     }
 }

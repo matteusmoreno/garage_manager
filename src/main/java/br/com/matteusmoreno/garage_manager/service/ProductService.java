@@ -9,7 +9,6 @@ import br.com.matteusmoreno.garage_manager.request.UpdateProductRequest;
 import br.com.matteusmoreno.garage_manager.response.ProductDetailsResponse;
 import br.com.matteusmoreno.garage_manager.ropository.ProductRepository;
 import io.micrometer.core.instrument.MeterRegistry;
-import io.quarkus.logging.Log;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.transaction.Transactional;
 
@@ -81,7 +80,7 @@ public class ProductService {
     }
 
     @Transactional
-    public ProductDetailsResponse updateProduct(UpdateProductRequest request) {
+    public Product updateProduct(UpdateProductRequest request) {
         Product product = findProductById(request.id());
 
         if (request.name() != null) {
@@ -105,7 +104,7 @@ public class ProductService {
         product.setUpdatedAt(LocalDateTime.now());
         productRepository.persist(product);
 
-        return new ProductDetailsResponse(product);
+        return product;
     }
 
     @Transactional
@@ -126,7 +125,7 @@ public class ProductService {
     }
     
     @Transactional
-    public ProductDetailsResponse enableProductById(Long id) {
+    public Product enableProductById(Long id) {
         Product product = findProductById(id);
 
         if (product.getIsActive()) {
@@ -141,6 +140,6 @@ public class ProductService {
 
         meterRegistry.counter("product_enabled").increment();
 
-        return new ProductDetailsResponse(product);
+        return product;
     }
 }
