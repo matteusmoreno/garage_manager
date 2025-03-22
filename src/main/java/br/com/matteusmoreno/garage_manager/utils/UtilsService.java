@@ -28,7 +28,6 @@ public class UtilsService {
         return !check.elementOf(cpf, ParametroTipo.CPF).validate().hasError();
     }
 
-
     public Boolean dateValidation(String birthDateStr) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/uuuu")
                 .withResolverStyle(ResolverStyle.STRICT)
