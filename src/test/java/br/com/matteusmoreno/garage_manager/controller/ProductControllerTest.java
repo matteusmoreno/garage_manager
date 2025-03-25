@@ -45,11 +45,11 @@ class ProductControllerTest {
 
     @BeforeEach
     void setUp() {
-        createProductRequest = new CreateProductRequest("Product Test", "Description Test", "Brand Test", BigDecimal.valueOf(10.00), BigDecimal.valueOf(20.00));
-        product = new Product(1L, "Product Test", "Description Test", "BRAND TEST", BigDecimal.valueOf(10.00), BigDecimal.valueOf(20.00), LocalDateTime.now(), null, null, true);
+        createProductRequest = new CreateProductRequest("Product Test", "Description Test", "Brand Test", BigDecimal.valueOf(10.00), BigDecimal.valueOf(20.00), 0);
+        product = new Product(1L, "Product Test", "Description Test", "BRAND TEST", BigDecimal.valueOf(10.00), BigDecimal.valueOf(20.00), 0, LocalDateTime.now(), null, null, true);
         productDetailsResponse = new ProductDetailsResponse(product);
-        updateProductRequest = new UpdateProductRequest(1L, "Updated Product Test", "Updated Description Test", "Updated Brand Test", BigDecimal.valueOf(50.00), BigDecimal.valueOf(70.00));
-        updatedProduct = new Product(1L, "Updated Product Test", "Updated Description Test", "UPDATED BRAND TEST", BigDecimal.valueOf(50.00), BigDecimal.valueOf(70.00), LocalDateTime.now(), LocalDateTime.now(), null, true);
+        updateProductRequest = new UpdateProductRequest(1L, "Updated Product Test", "Updated Description Test", "Updated Brand Test", BigDecimal.valueOf(50.00), BigDecimal.valueOf(70.00), 10);
+        updatedProduct = new Product(1L, "Updated Product Test", "Updated Description Test", "UPDATED BRAND TEST", BigDecimal.valueOf(50.00), BigDecimal.valueOf(70.00), 10, LocalDateTime.now(), LocalDateTime.now(), null, true);
     }
 
     @Test
@@ -74,6 +74,7 @@ class ProductControllerTest {
                 () -> assertEquals(createProductRequest.brand().toUpperCase(), productDetailsResponse.brand()),
                 () -> assertEquals(BigDecimal.valueOf(10.00), productDetailsResponse.purchasePrice()),
                 () -> assertEquals(BigDecimal.valueOf(20.00), productDetailsResponse.salePrice()),
+                () -> assertEquals(product.getStockQuantity(), productDetailsResponse.stockQuantity()),
                 () -> assertNotNull(productDetailsResponse.createdAt()),
                 () -> assertNull(productDetailsResponse.updatedAt()),
                 () -> assertNull(productDetailsResponse.deletedAt()),
@@ -100,6 +101,7 @@ class ProductControllerTest {
                 () -> assertEquals(product.getBrand(), responseBody.brand()),
                 () -> assertEquals(product.getPurchasePrice(), responseBody.purchasePrice()),
                 () -> assertEquals(product.getSalePrice(), responseBody.salePrice()),
+                () -> assertEquals(product.getStockQuantity(), responseBody.stockQuantity()),
                 () -> assertEquals(product.getCreatedAt(), responseBody.createdAt()),
                 () -> assertEquals(product.getUpdatedAt(), responseBody.updatedAt()),
                 () -> assertEquals(product.getDeletedAt(), responseBody.deletedAt()),
@@ -141,6 +143,7 @@ class ProductControllerTest {
                 () -> assertEquals(updateProductRequest.brand().toUpperCase(), responseBody.brand()),
                 () -> assertEquals(updateProductRequest.purchasePrice(), responseBody.purchasePrice()),
                 () -> assertEquals(updateProductRequest.salePrice(), responseBody.salePrice()),
+                () -> assertEquals(updateProductRequest.stockQuantity(), responseBody.stockQuantity()),
                 () -> assertNotNull(responseBody.createdAt()),
                 () -> assertNotNull(responseBody.updatedAt()),
                 () -> assertNull(responseBody.deletedAt()),
@@ -178,6 +181,7 @@ class ProductControllerTest {
                 () -> assertEquals(product.getBrand().toUpperCase(), productDetailsResponse.brand()),
                 () -> assertEquals(product.getPurchasePrice(), productDetailsResponse.purchasePrice()),
                 () -> assertEquals(product.getSalePrice(), productDetailsResponse.salePrice()),
+                () -> assertEquals(product.getStockQuantity(), productDetailsResponse.stockQuantity()),
                 () -> assertEquals(product.getCreatedAt(), productDetailsResponse.createdAt()),
                 () -> assertEquals(product.getUpdatedAt(), productDetailsResponse.updatedAt()),
                 () -> assertNull(productDetailsResponse.deletedAt()),

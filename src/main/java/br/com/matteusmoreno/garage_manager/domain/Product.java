@@ -23,6 +23,8 @@ public class Product {
     private BigDecimal purchasePrice;
     @Column(name = "sale_price", precision = 10, scale = 2)
     private BigDecimal salePrice;
+    @Column(name = "stock_quantity")
+    private Integer stockQuantity;
     @Column(name = "created_at")
     private LocalDateTime createdAt;
     @Column(name = "updated_at")

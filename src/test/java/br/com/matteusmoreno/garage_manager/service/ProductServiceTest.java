@@ -44,9 +44,9 @@ class ProductServiceTest {
 
     @BeforeEach
     void setUp() {
-        createProductRequest = new CreateProductRequest("Product Test", "Description Test", "Brand Test", BigDecimal.valueOf(10.00), BigDecimal.valueOf(20.00));
-        product = new Product(1L, "Product Test", "Description Test", "Brand Test", BigDecimal.valueOf(10.00), BigDecimal.valueOf(20.00), LocalDateTime.of(2020, 1, 1, 0, 0), null, null, true);
-        updateProductRequest = new UpdateProductRequest(product.getId(), "New Product name", "New Description", "New Brand", BigDecimal.valueOf(30.00), BigDecimal.valueOf(40.00));
+        createProductRequest = new CreateProductRequest("Product Test", "Description Test", "Brand Test", BigDecimal.valueOf(10.00), BigDecimal.valueOf(20.00), 0);
+        product = new Product(1L, "Product Test", "Description Test", "Brand Test", BigDecimal.valueOf(10.00), BigDecimal.valueOf(20.00), 0, LocalDateTime.of(2020, 1, 1, 0, 0), null, null, true);
+        updateProductRequest = new UpdateProductRequest(product.getId(), "New Product name", "New Description", "New Brand", BigDecimal.valueOf(30.00), BigDecimal.valueOf(40.00), 10);
 
 
         setupMeterRegistry();
@@ -64,6 +64,7 @@ class ProductServiceTest {
                 () -> assertEquals(createProductRequest.brand().toUpperCase(), response.getBrand()),
                 () -> assertEquals(createProductRequest.purchasePrice(), response.getPurchasePrice()),
                 () -> assertEquals(createProductRequest.salePrice(), response.getSalePrice()),
+                () -> assertEquals(createProductRequest.stockQuantity(), response.getStockQuantity()),
                 () -> assertNotNull(response.getCreatedAt()),
                 () -> assertNull(response.getUpdatedAt()),
                 () -> assertNull(response.getDeletedAt()),
@@ -86,6 +87,7 @@ class ProductServiceTest {
                 () -> assertEquals(product.getBrand(), result.getBrand()),
                 () -> assertEquals(product.getPurchasePrice(), result.getPurchasePrice()),
                 () -> assertEquals(product.getSalePrice(), result.getSalePrice()),
+                () -> assertEquals(product.getStockQuantity(), result.getStockQuantity()),
                 () -> assertEquals(product.getCreatedAt(), result.getCreatedAt()),
                 () -> assertNull(result.getUpdatedAt()),
                 () -> assertNull(result.getDeletedAt()),
@@ -129,6 +131,7 @@ class ProductServiceTest {
                 () -> assertEquals(products.getFirst().getBrand(), result.getFirst().brand()),
                 () -> assertEquals(products.getFirst().getPurchasePrice(), result.getFirst().purchasePrice()),
                 () -> assertEquals(products.getFirst().getSalePrice(), result.getFirst().salePrice()),
+                () -> assertEquals(products.getFirst().getStockQuantity(), result.getFirst().stockQuantity()),
                 () -> assertEquals(products.getFirst().getCreatedAt(), result.getFirst().createdAt()),
                 () -> assertNull(result.getFirst().updatedAt()),
                 () -> assertNull(result.getFirst().deletedAt()),
@@ -170,6 +173,7 @@ class ProductServiceTest {
                 () -> assertEquals(updateProductRequest.brand().toUpperCase(), result.getBrand()),
                 () -> assertEquals(updateProductRequest.purchasePrice(), result.getPurchasePrice()),
                 () -> assertEquals(updateProductRequest.salePrice(), result.getSalePrice()),
+                () -> assertEquals(updateProductRequest.stockQuantity(), result.getStockQuantity()),
                 () -> assertEquals(product.getCreatedAt(), result.getCreatedAt()),
                 () -> assertNotNull(result.getUpdatedAt()),
                 () -> assertNull(result.getDeletedAt()),
@@ -224,6 +228,7 @@ class ProductServiceTest {
                 () -> assertEquals(product.getBrand(), result.getBrand()),
                 () -> assertEquals(product.getPurchasePrice(), result.getPurchasePrice()),
                 () -> assertEquals(product.getSalePrice(), result.getSalePrice()),
+                () -> assertEquals(product.getStockQuantity(), result.getStockQuantity()),
                 () -> assertEquals(product.getCreatedAt(), result.getCreatedAt()),
                 () -> assertNotNull(result.getUpdatedAt()),
                 () -> assertNull(result.getDeletedAt()),

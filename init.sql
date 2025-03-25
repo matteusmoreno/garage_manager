@@ -5,6 +5,7 @@ CREATE TABLE products (
     brand VARCHAR(255),
     purchase_price NUMERIC(10,2) NOT NULL,
     sale_price NUMERIC(10,2) NOT NULL,
+    stock_quantity INTEGER NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT NULL,
     deleted_at TIMESTAMP DEFAULT NULL,

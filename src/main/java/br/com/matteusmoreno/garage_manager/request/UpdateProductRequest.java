@@ -1,6 +1,8 @@
 package br.com.matteusmoreno.garage_manager.request;
 
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.PositiveOrZero;
 
 import java.math.BigDecimal;
 
@@ -11,5 +13,7 @@ public record UpdateProductRequest(
         String description,
         String brand,
         BigDecimal purchasePrice,
-        BigDecimal salePrice) {
+        BigDecimal salePrice,
+        @PositiveOrZero(message = "Stock quantity must be positive or zero")
+        Integer stockQuantity) {
 }

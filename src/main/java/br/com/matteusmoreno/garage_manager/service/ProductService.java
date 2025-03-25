@@ -34,6 +34,7 @@ public class ProductService {
                 .brand(request.brand().toUpperCase())
                 .purchasePrice(request.purchasePrice())
                 .salePrice(request.salePrice())
+                .stockQuantity(request.stockQuantity())
                 .createdAt(LocalDateTime.now())
                 .updatedAt(null)
                 .deletedAt(null)
@@ -97,6 +98,9 @@ public class ProductService {
         }
         if (request.salePrice() != null) {
             product.setSalePrice(request.salePrice());
+        }
+        if (request.stockQuantity() != null) {
+            product.setStockQuantity(request.stockQuantity());
         }
 
         meterRegistry.counter("product_updated").increment();
