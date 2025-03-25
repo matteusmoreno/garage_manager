@@ -1,4 +1,4 @@
-package br.com.matteusmoreno.garage_manager.ropository;
+package br.com.matteusmoreno.garage_manager.repository;
 
 import br.com.matteusmoreno.garage_manager.domain.Customer;
 import io.quarkus.hibernate.orm.panache.PanacheRepository;

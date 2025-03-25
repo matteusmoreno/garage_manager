@@ -7,7 +7,7 @@ import br.com.matteusmoreno.garage_manager.exception.exception_class.ProductNotF
 import br.com.matteusmoreno.garage_manager.request.CreateProductRequest;
 import br.com.matteusmoreno.garage_manager.request.UpdateProductRequest;
 import br.com.matteusmoreno.garage_manager.response.ProductDetailsResponse;
-import br.com.matteusmoreno.garage_manager.ropository.ProductRepository;
+import br.com.matteusmoreno.garage_manager.repository.ProductRepository;
 import io.micrometer.core.instrument.Counter;
 import io.micrometer.core.instrument.MeterRegistry;
 import org.junit.jupiter.api.BeforeEach;

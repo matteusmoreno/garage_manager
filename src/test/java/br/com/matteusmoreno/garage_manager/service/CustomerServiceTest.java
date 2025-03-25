@@ -5,7 +5,7 @@ import br.com.matteusmoreno.garage_manager.domain.Customer;
 import br.com.matteusmoreno.garage_manager.exception.exception_class.*;
 import br.com.matteusmoreno.garage_manager.request.CreateCustomerRequest;
 import br.com.matteusmoreno.garage_manager.request.UpdateCustomerRequest;
-import br.com.matteusmoreno.garage_manager.ropository.CustomerRepository;
+import br.com.matteusmoreno.garage_manager.repository.CustomerRepository;
 import br.com.matteusmoreno.garage_manager.utils.UtilsService;
 import io.micrometer.core.instrument.Counter;
 import io.micrometer.core.instrument.MeterRegistry;

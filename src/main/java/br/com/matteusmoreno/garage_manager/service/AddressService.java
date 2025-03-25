@@ -4,7 +4,7 @@ import br.com.matteusmoreno.garage_manager.client.AddressApiResponse;
 import br.com.matteusmoreno.garage_manager.client.ViaCepClient;
 import br.com.matteusmoreno.garage_manager.domain.Address;
 import br.com.matteusmoreno.garage_manager.exception.exception_class.ZipCodeNotFoundException;
-import br.com.matteusmoreno.garage_manager.ropository.AddressRepository;
+import br.com.matteusmoreno.garage_manager.repository.AddressRepository;
 import io.micrometer.core.instrument.MeterRegistry;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.transaction.Transactional;
