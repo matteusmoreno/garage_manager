@@ -1,36 +1,33 @@
 package br.com.matteusmoreno.garage_manager.domain;
 
+import br.com.matteusmoreno.garage_manager.constant.MotorcycleBrand;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.UUID;
 
 @Entity
-@Table(name = "customers")
+@Table(name = "motorcycles")
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
 @Getter @Setter
-public class Customer {
+public class Motorcycle {
 
     @Id @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
-    private String name;
-    @Column(name = "birth_date")
-    private String birthDate;
-    private Integer age;
-    private String phone;
-    private String email;
-    private String cpf;
+    @Enumerated(EnumType.STRING)
+    private MotorcycleBrand brand;
+    private String model;
+    private String year;
+    private String color;
+    @Column(name = "license_plate")
+    private String licensePlate;
 
-    @ManyToOne(cascade = CascadeType.ALL)
-    private Address address;
-
-    @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    private List<Motorcycle> motorcycles = new ArrayList<>();
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "customer_id")
+    private Customer customer;
 
     @Column(name = "created_at")
     private LocalDateTime createdAt;
@@ -40,5 +37,4 @@ public class Customer {
     private LocalDateTime deletedAt;
     @Column(name = "is_active")
     private Boolean isActive;
-
 }

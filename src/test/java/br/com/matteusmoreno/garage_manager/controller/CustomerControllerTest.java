@@ -19,6 +19,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.net.URI;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -46,12 +47,12 @@ class CustomerControllerTest {
 
     @BeforeEach
     void setUp() {
-        createCustomerRequest = new CreateCustomerRequest("Customer Test", "28/08/1990", "(22)99822-3307", "customer@email.com", "034.527.990-50", "28994-675", "223", "Armação Motos");
+        createCustomerRequest = new CreateCustomerRequest("Customer Test", "28/08/1990", "(22)99822-3307", "customer@email.com", "034.527.990-50", "28994-675", "223", "Armação Motos", new ArrayList<>());
         address = new Address(1L, "28994-666", "Street", "Neighborhood", "123", "City", "State", "Complement");
-        customer = new Customer(UUID.randomUUID(), "Customer Test", "28/08/1990", 34, "(22)99822-3307", "customer@email.com", "034.527.990-50", address, LocalDateTime.now(), null, null, true);
+        customer = new Customer(UUID.randomUUID(), "Customer Test", "28/08/1990", 34, "(22)99822-3307", "customer@email.com", "034.527.990-50", address, new ArrayList<>(), LocalDateTime.now(), null, null, true);
         customerDetailsResponse = new CustomerDetailsResponse(customer);
         updateCustomerRequest = new UpdateCustomerRequest(UUID.randomUUID(), "Updated Customer Test", "30/08/1990", "(22)00000-0000", "newemail@email.com", "309.609.840-97", "", "", "");
-        updatedCustomer = new Customer(UUID.randomUUID(), "Updated Customer Test", "30/08/1990", 31, "(22)00000-0000", "(22)00000-0000", "309.609.840-97", address, LocalDateTime.now(), LocalDateTime.now(), null, true);
+        updatedCustomer = new Customer(UUID.randomUUID(), "Updated Customer Test", "30/08/1990", 31, "(22)00000-0000", "(22)00000-0000", "309.609.840-97", address, new ArrayList<>(), LocalDateTime.now(), LocalDateTime.now(), null, true);
     }
 
     @Test

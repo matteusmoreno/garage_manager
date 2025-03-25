@@ -2,6 +2,7 @@ package br.com.matteusmoreno.garage_manager.service;
 
 import br.com.matteusmoreno.garage_manager.domain.Address;
 import br.com.matteusmoreno.garage_manager.domain.Customer;
+import br.com.matteusmoreno.garage_manager.domain.Motorcycle;
 import br.com.matteusmoreno.garage_manager.exception.exception_class.*;
 import br.com.matteusmoreno.garage_manager.request.CreateCustomerRequest;
 import br.com.matteusmoreno.garage_manager.request.UpdateCustomerRequest;
@@ -12,6 +13,7 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.transaction.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 @ApplicationScoped
@@ -21,12 +23,14 @@ public class CustomerService {
     private final AddressService addressService;
     private final MeterRegistry meterRegistry;
     private final UtilsService utilsService;
+    private final MotorcycleService motorcycleService;
 
-    public CustomerService(CustomerRepository customerRepository, AddressService addressService, MeterRegistry meterRegistry, UtilsService utilsService) {
+    public CustomerService(CustomerRepository customerRepository, AddressService addressService, MeterRegistry meterRegistry, UtilsService utilsService, MotorcycleService motorcycleService) {
         this.customerRepository = customerRepository;
         this.addressService = addressService;
         this.meterRegistry = meterRegistry;
         this.utilsService = utilsService;
+        this.motorcycleService = motorcycleService;
     }
 
     @Transactional
@@ -61,13 +65,16 @@ public class CustomerService {
                 .isActive(true)
                 .build();
 
-        meterRegistry.counter("customer_created").increment();
+        List<Motorcycle> motorcycles = motorcycleService.createMotorcycle(request.motorcycles(), customer);
+        customer.setMotorcycles(motorcycles);
 
+        meterRegistry.counter("customer_created").increment();
         customerRepository.persist(customer);
 
         return customer;
     }
 
+    @Transactional
     public Customer findCustomerById(UUID id) {
         if (customerRepository.findByUUID(id) == null) {
             meterRegistry.counter("customer_not_found").increment();

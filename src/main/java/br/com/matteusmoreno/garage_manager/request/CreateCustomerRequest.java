@@ -5,6 +5,8 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 
+import java.util.List;
+
 public record CreateCustomerRequest(
         @NotBlank(message = "Name is required")
         String name,
@@ -20,5 +22,7 @@ public record CreateCustomerRequest(
         @Pattern(regexp = "\\d{5}-\\d{3}", message = "Zip code must be in the format 12345-678")
         String zipCode,
         String addressNumber,
-        String addressComplement) {
+        String addressComplement,
+        List<CreateMotorcycleRequest> motorcycles
+        ) {
 }

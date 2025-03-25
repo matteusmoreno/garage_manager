@@ -1,11 +1,13 @@
 package br.com.matteusmoreno.garage_manager.service;
 
+import br.com.matteusmoreno.garage_manager.constant.MotorcycleBrand;
 import br.com.matteusmoreno.garage_manager.domain.Address;
 import br.com.matteusmoreno.garage_manager.domain.Customer;
+import br.com.matteusmoreno.garage_manager.domain.Motorcycle;
 import br.com.matteusmoreno.garage_manager.exception.exception_class.*;
+import br.com.matteusmoreno.garage_manager.repository.CustomerRepository;
 import br.com.matteusmoreno.garage_manager.request.CreateCustomerRequest;
 import br.com.matteusmoreno.garage_manager.request.UpdateCustomerRequest;
-import br.com.matteusmoreno.garage_manager.repository.CustomerRepository;
 import br.com.matteusmoreno.garage_manager.utils.UtilsService;
 import io.micrometer.core.instrument.Counter;
 import io.micrometer.core.instrument.MeterRegistry;
@@ -20,6 +22,8 @@ import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -42,6 +46,9 @@ class CustomerServiceTest {
     @Mock
     UtilsService utilsService;
 
+    @Mock
+    MotorcycleService motorcycleService;
+
     @InjectMocks
     CustomerService customerService;
 
@@ -50,14 +57,16 @@ class CustomerServiceTest {
     private Address newAddress;
     private Customer customer;
     private UpdateCustomerRequest updateCustomerRequest;
+    private Motorcycle motorcycle1;
 
     @BeforeEach
     void setUp() {
-        createCustomerRequest = new CreateCustomerRequest("Name", "28/08/1990", "(22)99822-3307", "email@email.com", "134.782.410-30", "28994-666", "123", "complement");
+        createCustomerRequest = new CreateCustomerRequest("Name", "28/08/1990", "(22)99822-3307", "email@email.com", "134.782.410-30", "28994-666", "123", "complement", new ArrayList<>());
         address = new Address(1L, "28994-666", "Street", "Neighborhood", "123", "City", "State", "Complement");
-        customer = new Customer(UUID.randomUUID(), "Fábio", "15/12/1990", 31, "(22)99999-9999", "fabio@email.com", "130.320.690-09", address, LocalDateTime.of(2025, 1, 1, 0, 0), null, null, true);
+        customer = new Customer(UUID.randomUUID(), "Fábio", "15/12/1990", 31, "(22)99999-9999", "fabio@email.com", "130.320.690-09", address, new ArrayList<>(), LocalDateTime.of(2025, 1, 1, 0, 0), null, null, true);
         updateCustomerRequest = new UpdateCustomerRequest(customer.getId(),"Fabio Silva", "15/12/1970", "(22)00000-0000", "fabio@newemail.com", "067.028.380-00", "21380-310", "456", "new complement");
         newAddress = new Address(2L, "21380-310", "New Street", "New Neighborhood", "456", "New City", "New State", "New Complement");
+        motorcycle1 = new Motorcycle(UUID.randomUUID(), MotorcycleBrand.HONDA, "CG 160", "2021", "BLACK", "ABC-1234", customer, LocalDateTime.now(), null, null, true);
 
         setupMeterRegistry();
     }
@@ -69,8 +78,10 @@ class CustomerServiceTest {
         when(utilsService.dateValidation(createCustomerRequest.birthDate())).thenReturn(true);
         when(customerRepository.existsByCpfOrEmail(createCustomerRequest.cpf(), createCustomerRequest.email())).thenReturn(false);
         when(addressService.createAddress(createCustomerRequest.zipCode(), createCustomerRequest.addressNumber(), createCustomerRequest.addressComplement())).thenReturn(address);
+        when(motorcycleService.createMotorcycle(any(), any())).thenReturn(List.of(motorcycle1));
 
         Customer response = customerService.createCustomer(createCustomerRequest);
+
 
         verify(utilsService, times(1)).cpfValidation(createCustomerRequest.cpf());
         verify(utilsService, times(1)).dateValidation(createCustomerRequest.birthDate());
@@ -87,11 +98,51 @@ class CustomerServiceTest {
                 () -> assertEquals(createCustomerRequest.email(), response.getEmail()),
                 () -> assertEquals(createCustomerRequest.cpf(), response.getCpf()),
                 () -> assertEquals(address, response.getAddress()),
+                () -> assertNotNull(response.getMotorcycles()),
+                () -> assertEquals(motorcycle1, response.getMotorcycles().getFirst()),
                 () -> assertNotNull(response.getCreatedAt()),
                 () -> assertNull(response.getUpdatedAt()),
                 () -> assertNull(response.getDeletedAt()),
                 () -> assertTrue(response.getIsActive())
         );
+    }
+
+    @Test
+    @DisplayName("Should create customer without motorcycles correctly")
+    void shouldCreateCustomerWithoutMotorcyclesCorrectly() {
+        CreateCustomerRequest requestWithoutMotorcycles = new CreateCustomerRequest("Name", "28/08/1990", "(22)99822-3307", "name@email.com", "021.670.990-37", "28994-675", "223", "Armação Motos", List.of());
+
+        when(utilsService.cpfValidation(requestWithoutMotorcycles.cpf())).thenReturn(true);
+        when(utilsService.dateValidation(requestWithoutMotorcycles.birthDate())).thenReturn(true);
+        when(customerRepository.existsByCpfOrEmail(requestWithoutMotorcycles.cpf(), requestWithoutMotorcycles.email())).thenReturn(false);
+        when(addressService.createAddress(requestWithoutMotorcycles.zipCode(), requestWithoutMotorcycles.addressNumber(), requestWithoutMotorcycles.addressComplement())).thenReturn(address);
+        when(motorcycleService.createMotorcycle(requestWithoutMotorcycles.motorcycles(), customer)).thenReturn(new ArrayList<>());
+
+        Customer response = customerService.createCustomer(requestWithoutMotorcycles);
+
+        verify(utilsService, times(1)).cpfValidation(requestWithoutMotorcycles.cpf());
+        verify(utilsService, times(1)).dateValidation(requestWithoutMotorcycles.birthDate());
+        verify(customerRepository, times(1)).existsByCpfOrEmail(requestWithoutMotorcycles.cpf(), requestWithoutMotorcycles.email());
+        verify(addressService, times(1)).createAddress(requestWithoutMotorcycles.zipCode(), requestWithoutMotorcycles.addressNumber(), requestWithoutMotorcycles.addressComplement());
+        verify(utilsService, times(1)).calculateAge(requestWithoutMotorcycles.birthDate());
+        verify(customerRepository, times(1)).persist(response);
+
+        assertAll(
+                () -> assertEquals(requestWithoutMotorcycles.name(), response.getName()),
+                () -> assertEquals(requestWithoutMotorcycles.birthDate(), response.getBirthDate()),
+                () -> assertNotNull(response.getAge()),
+                () -> assertEquals(requestWithoutMotorcycles.phone(), response.getPhone()),
+                () -> assertEquals(requestWithoutMotorcycles.email(), response.getEmail()),
+                () -> assertEquals(requestWithoutMotorcycles.cpf(), response.getCpf()),
+                () -> assertEquals(address, response.getAddress()),
+                () -> assertNotNull(response.getMotorcycles()),
+                () -> assertTrue(response.getMotorcycles().isEmpty()),
+                () -> assertNotNull(response.getCreatedAt()),
+                () -> assertNull(response.getUpdatedAt()),
+                () -> assertNull(response.getDeletedAt()),
+                () -> assertTrue(response.getIsActive())
+        );
+
     }
 
     @Test
