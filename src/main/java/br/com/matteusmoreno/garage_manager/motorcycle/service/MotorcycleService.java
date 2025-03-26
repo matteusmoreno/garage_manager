@@ -1,6 +1,7 @@
 package br.com.matteusmoreno.garage_manager.motorcycle.service;
 
 import br.com.matteusmoreno.garage_manager.customer.entity.Customer;
+import br.com.matteusmoreno.garage_manager.exception.exception_class.MotorcycleAlreadyExistsException;
 import br.com.matteusmoreno.garage_manager.motorcycle.entity.Motorcycle;
 import br.com.matteusmoreno.garage_manager.motorcycle.repository.MotorcycleRepository;
 import br.com.matteusmoreno.garage_manager.motorcycle.request.CreateMotorcycleRequest;
@@ -28,6 +29,10 @@ public class MotorcycleService {
         List<Motorcycle> motorcycles = new ArrayList<>();
 
         for (CreateMotorcycleRequest motorcycleRequest : request) {
+            if (motorcycleRepository.findByLicensePlate(motorcycleRequest.licensePlate())) {
+                meterRegistry.counter("motorcycles_exists").increment();
+                throw new MotorcycleAlreadyExistsException("Motorcycle already exists");
+            }
             Motorcycle motorcycle = Motorcycle.builder()
                     .brand(motorcycleRequest.brand())
                     .model(motorcycleRequest.model())
