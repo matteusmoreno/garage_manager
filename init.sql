@@ -56,3 +56,24 @@ CREATE TABLE motorcycles (
     CONSTRAINT fk_motorcycles_customer FOREIGN KEY (customer_id) REFERENCES customers(id) ON DELETE CASCADE
 );
 
+CREATE TABLE employees (
+    id UUID PRIMARY KEY,
+    username VARCHAR(255) NOT NULL,
+    password VARCHAR(255) NOT NULL,
+    name VARCHAR(255) NOT NULL,
+    email VARCHAR(255) UNIQUE,
+    phone VARCHAR(20) UNIQUE,
+    birth_date VARCHAR(12),
+    age INTEGER,
+    cpf VARCHAR(14) UNIQUE,
+    role VARCHAR(50) NOT NULL,
+    address_id BIGINT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT NULL,
+    deleted_at TIMESTAMP DEFAULT NULL,
+    is_active BOOLEAN DEFAULT TRUE,
+
+CONSTRAINT fk_employees_address FOREIGN KEY (address_id) REFERENCES addresses(id) ON DELETE SET NULL
+);
+
+
