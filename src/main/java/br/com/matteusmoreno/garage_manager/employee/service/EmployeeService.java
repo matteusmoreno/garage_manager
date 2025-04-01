@@ -149,4 +149,21 @@ public class EmployeeService {
         employee.setDeletedAt(LocalDateTime.now());
         employeeRepository.persist(employee);
     }
+
+    @Transactional
+    public Employee enableEmployeeById(UUID id) {
+        Employee employee = findEmployeeById(id);
+
+        if (employee.getIsActive()) {
+            meterRegistry.counter("employee_already_enabled").increment();
+            throw new EmployeeIsAlreadyEnabledException("Employee is already enabled");
+        }
+
+        employee.setIsActive(true);
+        employee.setUpdatedAt(LocalDateTime.now());
+        employee.setDeletedAt(null);
+        employeeRepository.persist(employee);
+
+        return employee;
+    }
 }

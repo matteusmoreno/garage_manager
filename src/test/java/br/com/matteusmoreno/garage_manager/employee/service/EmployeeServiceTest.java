@@ -7,6 +7,8 @@ import br.com.matteusmoreno.garage_manager.employee.entity.Employee;
 import br.com.matteusmoreno.garage_manager.employee.repository.EmployeeRepository;
 import br.com.matteusmoreno.garage_manager.employee.request.CreateEmployeeRequest;
 import br.com.matteusmoreno.garage_manager.employee.request.UpdateEmployeeRequest;
+import br.com.matteusmoreno.garage_manager.exception.exception_class.EmployeeIsAlreadyDisabledException;
+import br.com.matteusmoreno.garage_manager.exception.exception_class.EmployeeIsAlreadyEnabledException;
 import br.com.matteusmoreno.garage_manager.exception.exception_class.EmployeeNotFoundException;
 import br.com.matteusmoreno.garage_manager.utils.UtilsService;
 import io.micrometer.core.instrument.Counter;
@@ -191,6 +193,46 @@ class EmployeeServiceTest {
 
         assertNotNull(employee.getDeletedAt());
         assertFalse(employee.getIsActive());
+    }
+
+    @Test
+    @DisplayName("Should throw EmployeeIsAlreadyDisabledException when employee is already disabled")
+    void shouldThrowEmployeeIsAlreadyDisabledException() {
+        employee.setIsActive(false);
+        when(employeeRepository.findByUUID(employee.getId())).thenReturn(employee);
+
+        assertThrows(EmployeeIsAlreadyDisabledException.class, () -> employeeService.disableEmployeeById(employee.getId()));
+
+        verify(employeeRepository, times(2)).findByUUID(employee.getId());
+        verify(employeeRepository, never()).persist(employee);
+    }
+
+    @Test
+    @DisplayName("Should enable an employee correctly")
+    void shouldEnableEmployeeCorrectly() {
+        employee.setIsActive(false);
+        employee.setDeletedAt(LocalDateTime.now());
+        when(employeeRepository.findByUUID(employee.getId())).thenReturn(employee);
+
+        Employee result = employeeService.enableEmployeeById(employee.getId());
+
+        verify(employeeRepository, times(2)).findByUUID(employee.getId());
+        verify(employeeRepository, times(1)).persist(employee);
+
+        assertNull(result.getDeletedAt());
+        assertNotNull(result.getUpdatedAt());
+        assertTrue(result.getIsActive());
+    }
+
+    @Test
+    @DisplayName("Should throw EmployeeIsAlreadyEnabledException when employee is already enabled")
+    void shouldThrowEmployeeIsAlreadyEnabledException() {
+        when(employeeRepository.findByUUID(employee.getId())).thenReturn(employee);
+
+        assertThrows(EmployeeIsAlreadyEnabledException.class, () -> employeeService.enableEmployeeById(employee.getId()));
+
+        verify(employeeRepository, times(2)).findByUUID(employee.getId());
+        verify(employeeRepository, never()).persist(employee);
     }
 
     private void setupMeterRegistry() {
