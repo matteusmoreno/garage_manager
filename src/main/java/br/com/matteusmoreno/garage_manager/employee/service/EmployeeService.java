@@ -5,6 +5,7 @@ import br.com.matteusmoreno.garage_manager.address.service.AddressService;
 import br.com.matteusmoreno.garage_manager.employee.entity.Employee;
 import br.com.matteusmoreno.garage_manager.employee.repository.EmployeeRepository;
 import br.com.matteusmoreno.garage_manager.employee.request.CreateEmployeeRequest;
+import br.com.matteusmoreno.garage_manager.employee.request.UpdateEmployeeRequest;
 import br.com.matteusmoreno.garage_manager.exception.exception_class.*;
 import br.com.matteusmoreno.garage_manager.utils.UtilsService;
 import io.micrometer.core.instrument.MeterRegistry;
@@ -95,6 +96,42 @@ public class EmployeeService {
 
         Employee employee = employeeRepository.findByUsername(username);
         meterRegistry.counter("employee_found_by_username").increment();
+
+        return employee;
+    }
+
+    @Transactional
+    public Employee updateEmployee(UpdateEmployeeRequest request) {
+        Employee employee = findEmployeeById(request.id());
+
+        if (request.username() != null) employee.setUsername(request.username());
+        if (request.password() != null) employee.setPassword(request.password());
+        if (request.name() != null) employee.setName(request.name());
+        if (request.email() != null) employee.setEmail(request.email());
+        if (request.phone() != null) employee.setPhone(request.phone());
+        if (request.birthDate() != null) {
+            if (!utilsService.dateValidation(request.birthDate())) {
+                throw new InvalidDateException("Invalid date");
+            }
+            employee.setBirthDate(request.birthDate());
+            employee.setAge(utilsService.calculateAge(request.birthDate()));
+        }
+        if (request.cpf() != null) {
+            if (!utilsService.cpfValidation(request.cpf())) {
+                throw new CpfInvalidException("Invalid CPF");
+            }
+            employee.setCpf(request.cpf());
+        }
+        if (request.role() != null) employee.setRole(request.role());
+        if (request.zipCode() != null) {
+            Address address = addressService.createAddress(request.zipCode(), request.addressNumber(), request.addressComplement());
+            employee.setAddress(address);
+        }
+
+        employee.setUpdatedAt(LocalDateTime.now());
+
+        meterRegistry.counter("employee_updated").increment();
+        employeeRepository.persist(employee);
 
         return employee;
     }

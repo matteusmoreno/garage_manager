@@ -6,6 +6,7 @@ import br.com.matteusmoreno.garage_manager.employee.constant.EmployeeRole;
 import br.com.matteusmoreno.garage_manager.employee.entity.Employee;
 import br.com.matteusmoreno.garage_manager.employee.repository.EmployeeRepository;
 import br.com.matteusmoreno.garage_manager.employee.request.CreateEmployeeRequest;
+import br.com.matteusmoreno.garage_manager.employee.request.UpdateEmployeeRequest;
 import br.com.matteusmoreno.garage_manager.exception.exception_class.EmployeeNotFoundException;
 import br.com.matteusmoreno.garage_manager.utils.UtilsService;
 import io.micrometer.core.instrument.Counter;
@@ -48,12 +49,16 @@ class EmployeeServiceTest {
     private CreateEmployeeRequest createEmployeeRequest;
     private Address address;
     private Employee employee;
+    private UpdateEmployeeRequest updateEmployeeRequest;
+    private Address newAddress;
 
     @BeforeEach
     void setUp() {
         createEmployeeRequest = new CreateEmployeeRequest("username", "password", "name", "email", "phone", "birthDate", "cpf", EmployeeRole.MECHANIC,"28994-666", "123", "Complement");
         address = new Address(1L, "28994-666", "Street", "Neighborhood", "123", "City", "State", "Complement");
         employee = new Employee(UUID.randomUUID(), "username", "password", "name", "email", "phone", "birthDate", 20, "cpf", EmployeeRole.MECHANIC, address, LocalDateTime.now(), null, null, true);
+        updateEmployeeRequest = new UpdateEmployeeRequest(employee.getId(), "newUsername", "newPassword", "newName", "newEmail", "newPhone", "newBirthDate", "280.487.090-15", EmployeeRole.MECHANIC, "28996-666", "", "");
+        newAddress = new Address(2L, "28996-666", "New Street", "New Neighborhood", "", "New City", "New State", "");
 
         setupMeterRegistry();
     }
@@ -141,6 +146,37 @@ class EmployeeServiceTest {
         assertThrows(EmployeeNotFoundException.class, () -> employeeService.findEmployeeByUsername(nonExistentUsername));
 
         verify(employeeRepository, times(1)).findByUsername(nonExistentUsername);
+    }
+
+    @Test
+    @DisplayName("Should update an employee correctly")
+    void shouldUpdateEmployeeCorrectly() {
+        when(employeeRepository.findByUUID(employee.getId())).thenReturn(employee);
+        when(utilsService.cpfValidation(updateEmployeeRequest.cpf())).thenReturn(true);
+        when(utilsService.dateValidation(updateEmployeeRequest.birthDate())).thenReturn(true);
+        when(addressService.createAddress(updateEmployeeRequest.zipCode(), updateEmployeeRequest.addressNumber(), updateEmployeeRequest.addressComplement())).thenReturn(newAddress);
+        when(utilsService.calculateAge(updateEmployeeRequest.birthDate())).thenReturn(30);
+
+        Employee result = employeeService.updateEmployee(updateEmployeeRequest);
+
+        verify(employeeRepository, times(2)).findByUUID(updateEmployeeRequest.id());
+        verify(utilsService, times(1)).cpfValidation(updateEmployeeRequest.cpf());
+        verify(utilsService, times(1)).dateValidation(updateEmployeeRequest.birthDate());
+        verify(addressService, times(1)).createAddress(updateEmployeeRequest.zipCode(), updateEmployeeRequest.addressNumber(), updateEmployeeRequest.addressComplement());
+        verify(employeeRepository, times(1)).persist(result);
+
+        assertAll(
+                () -> assertEquals(updateEmployeeRequest.username(), result.getUsername()),
+                () -> assertEquals(updateEmployeeRequest.password(), result.getPassword()),
+                () -> assertEquals(updateEmployeeRequest.name(), result.getName()),
+                () -> assertEquals(updateEmployeeRequest.email(), result.getEmail()),
+                () -> assertEquals(updateEmployeeRequest.phone(), result.getPhone()),
+                () -> assertEquals(updateEmployeeRequest.birthDate(), result.getBirthDate()),
+                () -> assertEquals(30, result.getAge()),
+                () -> assertEquals(updateEmployeeRequest.cpf(), result.getCpf()),
+                () -> assertEquals(updateEmployeeRequest.role(), result.getRole()),
+                () -> assertEquals(newAddress, result.getAddress())
+        );
     }
 
     private void setupMeterRegistry() {
