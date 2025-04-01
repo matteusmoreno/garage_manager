@@ -55,7 +55,7 @@ class ProductControllerTest {
     @Test
     @DisplayName("Should create a product")
     void shouldCreateProduct() {
-        URI uri = URI.create("http://localhost:8080/products/create/1");
+        URI uri = URI.create("http://localhost:8080/products/create/" + product.getId());
 
         when(uriInfo.getAbsolutePathBuilder()).thenReturn(UriBuilder.fromUri(uri));
         when(productService.createProduct(createProductRequest)).thenReturn(product);

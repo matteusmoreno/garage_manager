@@ -6,6 +6,7 @@ import br.com.matteusmoreno.garage_manager.employee.constant.EmployeeRole;
 import br.com.matteusmoreno.garage_manager.employee.entity.Employee;
 import br.com.matteusmoreno.garage_manager.employee.repository.EmployeeRepository;
 import br.com.matteusmoreno.garage_manager.employee.request.CreateEmployeeRequest;
+import br.com.matteusmoreno.garage_manager.exception.exception_class.EmployeeNotFoundException;
 import br.com.matteusmoreno.garage_manager.utils.UtilsService;
 import io.micrometer.core.instrument.Counter;
 import io.micrometer.core.instrument.MeterRegistry;
@@ -16,6 +17,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+
+import java.time.LocalDateTime;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -43,11 +47,13 @@ class EmployeeServiceTest {
 
     private CreateEmployeeRequest createEmployeeRequest;
     private Address address;
+    private Employee employee;
 
     @BeforeEach
     void setUp() {
         createEmployeeRequest = new CreateEmployeeRequest("username", "password", "name", "email", "phone", "birthDate", "cpf", EmployeeRole.MECHANIC,"28994-666", "123", "Complement");
         address = new Address(1L, "28994-666", "Street", "Neighborhood", "123", "City", "State", "Complement");
+        employee = new Employee(UUID.randomUUID(), "username", "password", "name", "email", "phone", "birthDate", 20, "cpf", EmployeeRole.MECHANIC, address, LocalDateTime.now(), null, null, true);
 
         setupMeterRegistry();
     }
@@ -89,6 +95,29 @@ class EmployeeServiceTest {
                 () -> assertTrue(result.getIsActive())
 
         );
+    }
+
+    @Test
+    @DisplayName("Should find an employee by ID correctly")
+    void shouldFindEmployeeByIdCorrectly() {
+        when(employeeRepository.findByUUID(employee.getId())).thenReturn(employee);
+
+        Employee result = employeeService.findEmployeeById(employee.getId());
+
+        verify(employeeRepository, times(2)).findByUUID(employee.getId());
+
+        assertEquals(employee, result);
+    }
+
+    @Test
+    @DisplayName("Should throw EmployeeNotFoundException when employee not found")
+    void shouldThrowEmployeeNotFoundException() {
+        UUID nonExistentId = UUID.randomUUID();
+        when(employeeRepository.findByUUID(nonExistentId)).thenReturn(null);
+
+        assertThrows(EmployeeNotFoundException.class, () -> employeeService.findEmployeeById(nonExistentId));
+
+        verify(employeeRepository, times(1)).findByUUID(nonExistentId);
     }
 
     private void setupMeterRegistry() {

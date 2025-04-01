@@ -5,16 +5,14 @@ import br.com.matteusmoreno.garage_manager.address.service.AddressService;
 import br.com.matteusmoreno.garage_manager.employee.entity.Employee;
 import br.com.matteusmoreno.garage_manager.employee.repository.EmployeeRepository;
 import br.com.matteusmoreno.garage_manager.employee.request.CreateEmployeeRequest;
-import br.com.matteusmoreno.garage_manager.exception.exception_class.CpfInvalidException;
-import br.com.matteusmoreno.garage_manager.exception.exception_class.EmployeeAlreadyExistsException;
-import br.com.matteusmoreno.garage_manager.exception.exception_class.InvalidDateException;
-import br.com.matteusmoreno.garage_manager.exception.exception_class.UsernameAlreadyExistsException;
+import br.com.matteusmoreno.garage_manager.exception.exception_class.*;
 import br.com.matteusmoreno.garage_manager.utils.UtilsService;
 import io.micrometer.core.instrument.MeterRegistry;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.transaction.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @ApplicationScoped
 public class EmployeeService {
@@ -71,6 +69,19 @@ public class EmployeeService {
 
         meterRegistry.counter("employee_created").increment();
         employeeRepository.persist(employee);
+
+        return employee;
+    }
+
+    @Transactional
+    public Employee findEmployeeById(UUID id) {
+        if (employeeRepository.findByUUID(id) == null) {
+            meterRegistry.counter("employee_not_found").increment();
+            throw new EmployeeNotFoundException("Employee not found");
+        }
+
+        Employee employee = employeeRepository.findByUUID(id);
+        meterRegistry.counter("employee_found_by_id").increment();
 
         return employee;
     }
