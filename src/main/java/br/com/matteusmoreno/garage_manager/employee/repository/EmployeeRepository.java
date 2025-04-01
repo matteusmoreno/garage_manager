@@ -21,4 +21,8 @@ public class EmployeeRepository implements PanacheRepository<Employee> {
     public Employee findByUUID(UUID id) {
         return find("id", id).firstResult();
     }
+
+    public Employee findByUsername(String username) {
+        return find("username", username).firstResult();
+    }
 }

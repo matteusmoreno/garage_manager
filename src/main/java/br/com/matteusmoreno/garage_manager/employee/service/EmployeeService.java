@@ -85,4 +85,17 @@ public class EmployeeService {
 
         return employee;
     }
+
+    @Transactional
+    public Employee findEmployeeByUsername(String username) {
+        if (employeeRepository.findByUsername(username) == null) {
+            meterRegistry.counter("employee_not_found").increment();
+            throw new EmployeeNotFoundException("Employee not found");
+        }
+
+        Employee employee = employeeRepository.findByUsername(username);
+        meterRegistry.counter("employee_found_by_username").increment();
+
+        return employee;
+    }
 }

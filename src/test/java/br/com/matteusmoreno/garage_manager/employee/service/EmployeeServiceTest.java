@@ -120,6 +120,29 @@ class EmployeeServiceTest {
         verify(employeeRepository, times(1)).findByUUID(nonExistentId);
     }
 
+    @Test
+    @DisplayName("Should find an employee by username correctly")
+    void shouldFindEmployeeByUsernameCorrectly() {
+        when(employeeRepository.findByUsername(employee.getUsername())).thenReturn(employee);
+
+        Employee result = employeeService.findEmployeeByUsername(employee.getUsername());
+
+        verify(employeeRepository, times(2)).findByUsername(employee.getUsername());
+
+        assertEquals(employee, result);
+    }
+
+    @Test
+    @DisplayName("Should throw EmployeeNotFoundException when employee not found by username")
+    void shouldThrowEmployeeNotFoundExceptionByUsername() {
+        String nonExistentUsername = "nonExistentUsername";
+        when(employeeRepository.findByUsername(nonExistentUsername)).thenReturn(null);
+
+        assertThrows(EmployeeNotFoundException.class, () -> employeeService.findEmployeeByUsername(nonExistentUsername));
+
+        verify(employeeRepository, times(1)).findByUsername(nonExistentUsername);
+    }
+
     private void setupMeterRegistry() {
         Counter counter = mock(Counter.class);
         when(meterRegistry.counter(anyString(), any(String[].class))).thenReturn(counter);
