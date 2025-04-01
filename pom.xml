@@ -97,6 +97,10 @@
             <artifactId>safeguard</artifactId>
             <version>0.0.1-RELEASE</version>
         </dependency>
+        <dependency>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-smallrye-openapi</artifactId>
+        </dependency>
     </dependencies>
 
     <build>

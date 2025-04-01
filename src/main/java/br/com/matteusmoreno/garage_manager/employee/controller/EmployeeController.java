@@ -62,7 +62,7 @@ public class EmployeeController {
     @Path("/enable/{id}")
     @PATCH
     public Response enable(UUID id) {
-        employeeService.enableEmployeeById(id);
-        return Response.noContent().build();
+        Employee employee = employeeService.enableEmployeeById(id);
+        return Response.ok(new EmployeeDetailsResponse(employee)).build();
     }
 }
