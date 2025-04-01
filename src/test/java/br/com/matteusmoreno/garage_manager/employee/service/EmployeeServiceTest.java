@@ -179,6 +179,20 @@ class EmployeeServiceTest {
         );
     }
 
+    @Test
+    @DisplayName("Should disable an employee correctly")
+    void shouldDisableEmployeeCorrectly() {
+        when(employeeRepository.findByUUID(employee.getId())).thenReturn(employee);
+
+        employeeService.disableEmployeeById(employee.getId());
+
+        verify(employeeRepository, times(2)).findByUUID(employee.getId());
+        verify(employeeRepository, times(1)).persist(employee);
+
+        assertNotNull(employee.getDeletedAt());
+        assertFalse(employee.getIsActive());
+    }
+
     private void setupMeterRegistry() {
         Counter counter = mock(Counter.class);
         when(meterRegistry.counter(anyString(), any(String[].class))).thenReturn(counter);

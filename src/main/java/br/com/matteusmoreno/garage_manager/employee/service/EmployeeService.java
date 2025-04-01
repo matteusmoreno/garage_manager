@@ -135,4 +135,18 @@ public class EmployeeService {
 
         return employee;
     }
+
+    @Transactional
+    public void disableEmployeeById(UUID id) {
+        Employee employee = findEmployeeById(id);
+
+        if (!employee.getIsActive()) {
+            meterRegistry.counter("employee_already_disabled").increment();
+            throw new EmployeeIsAlreadyDisabledException("Employee is already disabled");
+        }
+
+        employee.setIsActive(false);
+        employee.setDeletedAt(LocalDateTime.now());
+        employeeRepository.persist(employee);
+    }
 }
