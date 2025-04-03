@@ -128,6 +128,7 @@ class EmployeeControllerTest {
     @DisplayName("Should enable an employee")
     void shouldEnableAnEmployee() {
         UUID id = employee.getId();
+        when(employeeService.enableEmployeeById(id)).thenReturn(employee);
 
         Response response = employeeController.enable(id);
 
