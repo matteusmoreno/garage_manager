@@ -90,7 +90,7 @@ class CustomerServiceTest {
         verify(customerRepository, times(1)).existsByCpfOrEmail(createCustomerRequest.cpf(), createCustomerRequest.email());
         verify(addressService, times(1)).createAddress(createCustomerRequest.zipCode(), createCustomerRequest.addressNumber(), createCustomerRequest.addressComplement());
         verify(utilsService, times(1)).calculateAge(createCustomerRequest.birthDate());
-        verify(customerRepository, times(1)).persist(response);
+        verify(customerRepository, times(2)).persist(response);
 
         assertAll(
                 () -> assertEquals(createCustomerRequest.name(), response.getName()),
@@ -127,7 +127,7 @@ class CustomerServiceTest {
         verify(customerRepository, times(1)).existsByCpfOrEmail(requestWithoutMotorcycles.cpf(), requestWithoutMotorcycles.email());
         verify(addressService, times(1)).createAddress(requestWithoutMotorcycles.zipCode(), requestWithoutMotorcycles.addressNumber(), requestWithoutMotorcycles.addressComplement());
         verify(utilsService, times(1)).calculateAge(requestWithoutMotorcycles.birthDate());
-        verify(customerRepository, times(1)).persist(response);
+        verify(customerRepository, times(2)).persist(response);
 
         assertAll(
                 () -> assertEquals(requestWithoutMotorcycles.name(), response.getName()),

@@ -133,6 +133,6 @@ class EmployeeControllerTest {
 
         verify(employeeService, times(1)).enableEmployeeById(id);
 
-        assertEquals(Response.Status.NO_CONTENT.getStatusCode(), response.getStatus());
+        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
     }
 }

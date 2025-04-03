@@ -67,10 +67,11 @@ public class CustomerService {
                 .isActive(true)
                 .build();
 
+        meterRegistry.counter("customer_created").increment();
+        customerRepository.persist(customer);
+
         List<Motorcycle> motorcycles = motorcycleService.createMotorcycle(request.motorcycles(), customer);
         customer.setMotorcycles(motorcycles);
-
-        meterRegistry.counter("customer_created").increment();
         customerRepository.persist(customer);
 
         return customer;

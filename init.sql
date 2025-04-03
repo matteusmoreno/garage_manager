@@ -76,4 +76,35 @@ CREATE TABLE employees (
 CONSTRAINT fk_employees_address FOREIGN KEY (address_id) REFERENCES addresses(id) ON DELETE SET NULL
 );
 
+CREATE TABLE service_orders (
+    id BIGSERIAL PRIMARY KEY,
+    motorcycle_id UUID NOT NULL,
+    seller_id UUID NOT NULL,
+    mechanic_id UUID NOT NULL,
+    description TEXT,
+    labor_price NUMERIC(10,2) NOT NULL,
+    total_cost NUMERIC(10,2) NOT NULL,
+    service_order_status VARCHAR(50) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    started_at TIMESTAMP DEFAULT NULL,
+    updated_at TIMESTAMP DEFAULT NULL,
+    finished_at TIMESTAMP DEFAULT NULL,
+    canceled_at TIMESTAMP DEFAULT NULL,
+
+    CONSTRAINT fk_service_orders_motorcycle FOREIGN KEY (motorcycle_id) REFERENCES motorcycles(id) ON DELETE CASCADE,
+    CONSTRAINT fk_service_orders_seller FOREIGN KEY (seller_id) REFERENCES employees(id) ON DELETE CASCADE,
+    CONSTRAINT fk_service_orders_mechanic FOREIGN KEY (mechanic_id) REFERENCES employees(id) ON DELETE CASCADE
+);
+
+CREATE TABLE service_order_products (
+    id BIGSERIAL PRIMARY KEY,
+    service_order_id BIGINT NOT NULL,
+    product_id BIGINT NOT NULL,
+    quantity INTEGER NOT NULL,
+    unitary_price NUMERIC(10,2) NOT NULL,
+    final_price NUMERIC(10,2) NOT NULL,
+
+    CONSTRAINT fk_service_order_products_order FOREIGN KEY (service_order_id) REFERENCES service_orders(id) ON DELETE CASCADE,
+    CONSTRAINT fk_service_order_products_product FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE
+);
 
