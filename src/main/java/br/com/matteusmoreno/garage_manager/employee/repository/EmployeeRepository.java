@@ -2,6 +2,7 @@ package br.com.matteusmoreno.garage_manager.employee.repository;
 
 import br.com.matteusmoreno.garage_manager.customer.entity.Customer;
 import br.com.matteusmoreno.garage_manager.employee.entity.Employee;
+import br.com.matteusmoreno.garage_manager.exception.exception_class.EmployeeNotFoundException;
 import io.quarkus.hibernate.orm.panache.PanacheRepository;
 import jakarta.enterprise.context.ApplicationScoped;
 
@@ -19,6 +20,9 @@ public class EmployeeRepository implements PanacheRepository<Employee> {
     }
 
     public Employee findByUUID(UUID id) {
+        if (find("id", id).firstResultOptional().isEmpty()) {
+            throw new EmployeeNotFoundException("Employee not found");
+        }
         return find("id", id).firstResult();
     }
 

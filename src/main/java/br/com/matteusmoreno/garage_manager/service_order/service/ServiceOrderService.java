@@ -9,6 +9,7 @@ import br.com.matteusmoreno.garage_manager.service_order.repository.ServiceOrder
 import br.com.matteusmoreno.garage_manager.service_order.constant.ServiceOrderStatus;
 import br.com.matteusmoreno.garage_manager.service_order.entity.ServiceOrder;
 import br.com.matteusmoreno.garage_manager.service_order.request.CreateServiceOrderRequest;
+import br.com.matteusmoreno.garage_manager.service_order.request.UpdateServiceOrderRequest;
 import br.com.matteusmoreno.garage_manager.service_order_product.entity.ServiceOrderProduct;
 import br.com.matteusmoreno.garage_manager.service_order_product.service.ServiceOrderProductService;
 import io.micrometer.core.instrument.MeterRegistry;
@@ -81,6 +82,63 @@ public class ServiceOrderService {
         }
         meterRegistry.counter("service_order_found").increment();
         return serviceOrderRepository.findById(id);
+    }
+
+    @Transactional
+    public ServiceOrder updateServiceOrder(UpdateServiceOrderRequest request) {
+        ServiceOrder serviceOrder = findServiceOrderById(request.id());
+
+        if (request.motorcycleId() != null) {
+            Motorcycle motorcycle = motorcycleRepository.findByUUID(request.motorcycleId());
+            serviceOrder.setMotorcycle(motorcycle);
+        }
+
+        if (request.sellerId() != null) {
+            Employee seller = employeeRepository.findByUUID(request.sellerId());
+            serviceOrder.setSeller(seller);
+        }
+
+        if (request.mechanicId() != null) {
+            Employee mechanic = employeeRepository.findByUUID(request.mechanicId());
+            serviceOrder.setMechanic(mechanic);
+        }
+
+        if (request.products() != null) {
+            serviceOrder.getProducts().clear();
+            List<ServiceOrderProduct> products = request.products().stream()
+                    .map(req -> {
+                        ServiceOrderProduct product = serviceOrderProductService.createServiceOrderProduct(req);
+                        product.setServiceOrder(serviceOrder);
+                        return product;
+                    })
+                    .toList();
+
+            serviceOrder.getProducts().addAll(products);
+            BigDecimal totalCost = products.stream()
+                    .map(ServiceOrderProduct::getFinalPrice)
+                    .reduce(serviceOrder.getLaborPrice(), BigDecimal::add);
+
+            serviceOrder.setTotalCost(totalCost);
+        }
+
+
+        if (request.description() != null) {
+            serviceOrder.setDescription(request.description());
+        }
+
+        if (request.laborPrice() != null) {
+            serviceOrder.setLaborPrice(request.laborPrice());
+            BigDecimal totalCost = serviceOrder.getProducts().stream()
+                    .map(ServiceOrderProduct::getFinalPrice)
+                    .reduce(request.laborPrice(), BigDecimal::add);
+            serviceOrder.setTotalCost(totalCost);
+        }
+
+        serviceOrder.setUpdatedAt(LocalDateTime.now());
+        meterRegistry.counter("service_order_updated").increment();
+        serviceOrderRepository.persist(serviceOrder);
+
+        return serviceOrder;
     }
 
 }
