@@ -153,4 +153,16 @@ public class ServiceOrderService {
         return serviceOrder;
     }
 
+    @Transactional
+    public ServiceOrder completeServiceOrder(Long id) {
+        ServiceOrder serviceOrder = serviceOrderRepository.findById(id);
+
+        serviceOrder.setServiceOrderStatus(ServiceOrderStatus.COMPLETED);
+        serviceOrder.setUpdatedAt(LocalDateTime.now());
+
+        meterRegistry.counter("service_order_completed").increment();
+        serviceOrderRepository.persist(serviceOrder);
+        return serviceOrder;
+    }
+
 }

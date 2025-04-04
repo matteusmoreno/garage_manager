@@ -54,4 +54,11 @@ public class ServiceOrderController {
         ServiceOrder serviceOrder = serviceOrderService.startServiceOrder(id);
         return Response.ok(new ServiceOrderDetailsResponse(serviceOrder)).build();
     }
+
+    @Path("/complete/{id}")
+    @PUT
+    public Response completeServiceOrder(Long id) {
+        ServiceOrder serviceOrder = serviceOrderService.completeServiceOrder(id);
+        return Response.ok(new ServiceOrderDetailsResponse(serviceOrder)).build();
+    }
 }
