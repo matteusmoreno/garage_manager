@@ -141,4 +141,16 @@ public class ServiceOrderService {
         return serviceOrder;
     }
 
+    @Transactional
+    public ServiceOrder startServiceOrder(Long id) {
+        ServiceOrder serviceOrder = serviceOrderRepository.findById(id);
+
+        serviceOrder.setServiceOrderStatus(ServiceOrderStatus.IN_PROGRESS);
+        serviceOrder.setUpdatedAt(LocalDateTime.now());
+
+        meterRegistry.counter("service_order_started").increment();
+        serviceOrderRepository.persist(serviceOrder);
+        return serviceOrder;
+    }
+
 }

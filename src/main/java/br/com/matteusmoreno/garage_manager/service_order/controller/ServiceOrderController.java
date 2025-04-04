@@ -47,4 +47,11 @@ public class ServiceOrderController {
         ServiceOrder serviceOrder = serviceOrderService.updateServiceOrder(request);
         return Response.ok(new ServiceOrderDetailsResponse(serviceOrder)).build();
     }
+
+    @Path("/start/{id}")
+    @PUT
+    public Response startServiceOrder(Long id) {
+        ServiceOrder serviceOrder = serviceOrderService.startServiceOrder(id);
+        return Response.ok(new ServiceOrderDetailsResponse(serviceOrder)).build();
+    }
 }
