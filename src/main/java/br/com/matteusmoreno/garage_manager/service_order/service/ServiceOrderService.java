@@ -2,6 +2,7 @@ package br.com.matteusmoreno.garage_manager.service_order.service;
 
 import br.com.matteusmoreno.garage_manager.employee.entity.Employee;
 import br.com.matteusmoreno.garage_manager.employee.repository.EmployeeRepository;
+import br.com.matteusmoreno.garage_manager.exception.exception_class.ServiceOrderNotFoundException;
 import br.com.matteusmoreno.garage_manager.motorcycle.entity.Motorcycle;
 import br.com.matteusmoreno.garage_manager.motorcycle.repository.MotorcycleRepository;
 import br.com.matteusmoreno.garage_manager.service_order.repository.ServiceOrderRepository;
@@ -70,6 +71,16 @@ public class ServiceOrderService {
         serviceOrderRepository.persist(serviceOrder);
 
         return serviceOrder;
+    }
+
+    @Transactional
+    public ServiceOrder findServiceOrderById(Long id) {
+        if (serviceOrderRepository.findById(id) == null) {
+            meterRegistry.counter("service_order_not_found").increment();
+            throw new ServiceOrderNotFoundException("Service order not found");
+        }
+        meterRegistry.counter("service_order_found").increment();
+        return serviceOrderRepository.findById(id);
     }
 
 }

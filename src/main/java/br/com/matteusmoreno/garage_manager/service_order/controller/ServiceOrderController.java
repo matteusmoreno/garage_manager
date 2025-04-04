@@ -5,6 +5,7 @@ import br.com.matteusmoreno.garage_manager.service_order.service.ServiceOrderSer
 import br.com.matteusmoreno.garage_manager.service_order.entity.ServiceOrder;
 import br.com.matteusmoreno.garage_manager.service_order.request.CreateServiceOrderRequest;
 import jakarta.validation.Valid;
+import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.core.Context;
@@ -29,5 +30,12 @@ public class ServiceOrderController {
         URI uri = uriInfo.getAbsolutePathBuilder().path(serviceOrder.getId().toString()).build();
 
         return Response.created(uri).entity(new ServiceOrderDetailsResponse(serviceOrder)).build();
+    }
+
+    @Path("/find-by-id/{id}")
+    @GET
+    public Response findById(Long id) {
+        ServiceOrder serviceOrder = serviceOrderService.findServiceOrderById(id);
+        return Response.ok(new ServiceOrderDetailsResponse(serviceOrder)).build();
     }
 }

@@ -32,7 +32,7 @@ public class ServiceOrder {
     @ManyToOne
     private Employee mechanic;
 
-    @OneToMany(mappedBy = "serviceOrder", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "serviceOrder", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     private List<ServiceOrderProduct> products = new ArrayList<>();
 
     private String description;
