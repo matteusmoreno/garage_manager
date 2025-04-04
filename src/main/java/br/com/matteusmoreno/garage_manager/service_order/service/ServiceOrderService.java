@@ -146,7 +146,7 @@ public class ServiceOrderService {
         ServiceOrder serviceOrder = serviceOrderRepository.findById(id);
 
         serviceOrder.setServiceOrderStatus(ServiceOrderStatus.IN_PROGRESS);
-        serviceOrder.setUpdatedAt(LocalDateTime.now());
+        serviceOrder.setStartedAt(LocalDateTime.now());
 
         meterRegistry.counter("service_order_started").increment();
         serviceOrderRepository.persist(serviceOrder);
@@ -157,10 +157,22 @@ public class ServiceOrderService {
     public ServiceOrder completeServiceOrder(Long id) {
         ServiceOrder serviceOrder = serviceOrderRepository.findById(id);
 
+        serviceOrder.setFinishedAt(LocalDateTime.now());
         serviceOrder.setServiceOrderStatus(ServiceOrderStatus.COMPLETED);
-        serviceOrder.setUpdatedAt(LocalDateTime.now());
 
         meterRegistry.counter("service_order_completed").increment();
+        serviceOrderRepository.persist(serviceOrder);
+        return serviceOrder;
+    }
+
+    @Transactional
+    public ServiceOrder cancelServiceOrder(Long id) {
+        ServiceOrder serviceOrder = serviceOrderRepository.findById(id);
+
+        serviceOrder.setCanceledAt(LocalDateTime.now());
+        serviceOrder.setServiceOrderStatus(ServiceOrderStatus.CANCELED);
+
+        meterRegistry.counter("service_order_canceled").increment();
         serviceOrderRepository.persist(serviceOrder);
         return serviceOrder;
     }

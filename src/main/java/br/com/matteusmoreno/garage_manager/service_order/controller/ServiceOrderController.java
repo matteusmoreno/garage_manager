@@ -61,4 +61,11 @@ public class ServiceOrderController {
         ServiceOrder serviceOrder = serviceOrderService.completeServiceOrder(id);
         return Response.ok(new ServiceOrderDetailsResponse(serviceOrder)).build();
     }
+
+    @Path("/cancel/{id}")
+    @PUT
+    public Response cancelServiceOrder(Long id) {
+        ServiceOrder serviceOrder = serviceOrderService.cancelServiceOrder(id);
+        return Response.ok(new ServiceOrderDetailsResponse(serviceOrder)).build();
+    }
 }
