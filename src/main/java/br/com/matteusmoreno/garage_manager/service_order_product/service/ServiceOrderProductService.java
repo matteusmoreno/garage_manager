@@ -1,5 +1,7 @@
 package br.com.matteusmoreno.garage_manager.service_order_product.service;
 
+import br.com.matteusmoreno.garage_manager.exception.exception_class.InsufficientProductQuantityException;
+import br.com.matteusmoreno.garage_manager.exception.exception_class.ProductNotFoundException;
 import br.com.matteusmoreno.garage_manager.product.entity.Product;
 import br.com.matteusmoreno.garage_manager.product.repository.ProductRepository;
 import br.com.matteusmoreno.garage_manager.service_order_product.entity.ServiceOrderProduct;
@@ -21,10 +23,11 @@ public class ServiceOrderProductService {
 
     @Transactional
     public ServiceOrderProduct createServiceOrderProduct(CreateServiceOrderProductRequest request) {
+        if (productRepository.findById(request.productId()) == null) throw new ProductNotFoundException("Product not found: " + request.productId());
+
         Product product = productRepository.findById(request.productId());
 
-        //CREATE A VALIDATION CLASS
-        if (product.getStockQuantity() < request.quantity()) throw new IllegalArgumentException("Insufficient stock");
+        if (product.getStockQuantity() < request.quantity()) throw new InsufficientProductQuantityException("Insufficient product quantity: " + product.getName());
 
         return ServiceOrderProduct.builder()
                 .product(product)
