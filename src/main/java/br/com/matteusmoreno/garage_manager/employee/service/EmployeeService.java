@@ -53,7 +53,7 @@ public class EmployeeService {
 
         Employee employee = Employee.builder()
                 .username(request.username())
-                .password(request.password())
+                .password(utilsService.encodePassword(request.password()))
                 .name(request.name())
                 .email(request.email())
                 .phone(request.phone())

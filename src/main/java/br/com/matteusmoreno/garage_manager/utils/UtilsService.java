@@ -1,5 +1,6 @@
 package br.com.matteusmoreno.garage_manager.utils;
 
+import at.favre.lib.crypto.bcrypt.BCrypt;
 import br.com.safeguard.check.SafeguardCheck;
 import br.com.safeguard.interfaces.Check;
 import br.com.safeguard.types.ParametroTipo;
@@ -38,5 +39,13 @@ public class UtilsService {
         } catch (DateTimeParseException e) {
             return false;
         }
+    }
+
+    public String encodePassword(String rawPassword) {
+        return BCrypt.withDefaults().hashToString(12, rawPassword.toCharArray());
+    }
+
+    public boolean verifyPassword(String rawPassword, String hashedPassword) {
+        return BCrypt.verifyer().verify(rawPassword.toCharArray(), hashedPassword).verified;
     }
 }
