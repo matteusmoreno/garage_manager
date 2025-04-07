@@ -1,6 +1,5 @@
 package br.com.matteusmoreno.garage_manager.motorcycle.repository;
 
-import br.com.matteusmoreno.garage_manager.customer.entity.Customer;
 import br.com.matteusmoreno.garage_manager.exception.exception_class.MotorcycleNotFoundException;
 import br.com.matteusmoreno.garage_manager.motorcycle.entity.Motorcycle;
 import io.quarkus.hibernate.orm.panache.PanacheRepository;
