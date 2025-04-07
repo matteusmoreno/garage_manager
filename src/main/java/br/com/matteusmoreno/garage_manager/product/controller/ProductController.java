@@ -1,9 +1,9 @@
 package br.com.matteusmoreno.garage_manager.product.controller;
 
-import br.com.matteusmoreno.garage_manager.product.request.UpdateProductRequest;
-import br.com.matteusmoreno.garage_manager.product.response.ProductDetailsResponse;
 import br.com.matteusmoreno.garage_manager.product.entity.Product;
 import br.com.matteusmoreno.garage_manager.product.request.CreateProductRequest;
+import br.com.matteusmoreno.garage_manager.product.request.UpdateProductRequest;
+import br.com.matteusmoreno.garage_manager.product.response.ProductDetailsResponse;
 import br.com.matteusmoreno.garage_manager.product.service.ProductService;
 import jakarta.validation.Valid;
 import jakarta.ws.rs.*;
