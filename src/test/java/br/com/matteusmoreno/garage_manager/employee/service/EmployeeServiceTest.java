@@ -74,6 +74,7 @@ class EmployeeServiceTest {
         when(employeeRepository.existsByUsername(createEmployeeRequest.username())).thenReturn(false);
         when(utilsService.calculateAge(anyString())).thenReturn(20);
         when(addressService.createAddress(createEmployeeRequest.zipCode(), createEmployeeRequest.addressNumber(), createEmployeeRequest.addressComplement())).thenReturn(address);
+        when(utilsService.encodePassword(createEmployeeRequest.password())).thenReturn("encoded-password");
 
         Employee result = employeeService.createEmployee(createEmployeeRequest);
 
@@ -87,7 +88,7 @@ class EmployeeServiceTest {
 
         assertAll(
                 () -> assertEquals(createEmployeeRequest.username(), result.getUsername()),
-                () -> assertEquals(createEmployeeRequest.password(), result.getPassword()),
+                () -> assertEquals("encoded-password", result.getPassword()),
                 () -> assertEquals(createEmployeeRequest.name(), result.getName()),
                 () -> assertEquals(createEmployeeRequest.email(), result.getEmail()),
                 () -> assertEquals(createEmployeeRequest.phone(), result.getPhone()),

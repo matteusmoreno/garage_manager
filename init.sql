@@ -59,7 +59,7 @@ CREATE TABLE motorcycles (
 CREATE TABLE employees (
     id UUID PRIMARY KEY,
     username VARCHAR(255) NOT NULL,
-    password VARCHAR(255) NOT NULL,
+    password VARCHAR(500) NOT NULL,
     name VARCHAR(255) NOT NULL,
     email VARCHAR(255) UNIQUE,
     phone VARCHAR(20) UNIQUE,
@@ -107,4 +107,3 @@ CREATE TABLE service_order_products (
     CONSTRAINT fk_service_order_products_order FOREIGN KEY (service_order_id) REFERENCES service_orders(id) ON DELETE CASCADE,
     CONSTRAINT fk_service_order_products_product FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE
 );
-
