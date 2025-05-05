@@ -10,6 +10,7 @@ import br.com.matteusmoreno.garage_manager.service_order.constant.ServiceOrderSt
 import br.com.matteusmoreno.garage_manager.service_order.entity.ServiceOrder;
 import br.com.matteusmoreno.garage_manager.service_order.request.CreateServiceOrderRequest;
 import br.com.matteusmoreno.garage_manager.service_order.request.UpdateServiceOrderRequest;
+import br.com.matteusmoreno.garage_manager.service_order.response.ServiceOrderDetailsResponse;
 import br.com.matteusmoreno.garage_manager.service_order_product.entity.ServiceOrderProduct;
 import br.com.matteusmoreno.garage_manager.service_order_product.service.ServiceOrderProductService;
 import io.micrometer.core.instrument.MeterRegistry;
@@ -80,6 +81,18 @@ public class ServiceOrderService {
 
         meterRegistry.counter("service_orders_found").increment();
         return serviceOrders;
+    }
+
+    @Transactional
+    public List<ServiceOrderDetailsResponse> findServiceOrdersByDay(int day, int month, int year) {
+        List<ServiceOrder> serviceOrders = serviceOrderRepository.findByDate(day, month, year);
+
+        List<ServiceOrderDetailsResponse> servicerOrdersResponse = serviceOrders.stream()
+                .map(ServiceOrderDetailsResponse::new)
+                .toList();
+
+        meterRegistry.counter("service_orders_found").increment();
+        return servicerOrdersResponse;
     }
 
     @Transactional

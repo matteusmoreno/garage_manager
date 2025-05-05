@@ -15,6 +15,7 @@ import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.UriInfo;
 
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.List;
 
 @Path("/service-orders")
@@ -46,6 +47,14 @@ public class ServiceOrderController {
     @GET
     public Response findAll() {
         List<ServiceOrder> serviceOrders = serviceOrderService.findAllServiceOrder();
+        return Response.ok(serviceOrders).build();
+    }
+
+    @Path("/find-by-date/{day}/{month}/{year}")
+    @GET
+    public Response findByDate(int day, int month, int year) {
+        List<ServiceOrderDetailsResponse> serviceOrders = serviceOrderService.findServiceOrdersByDay(day, month, year);
+
         return Response.ok(serviceOrders).build();
     }
 

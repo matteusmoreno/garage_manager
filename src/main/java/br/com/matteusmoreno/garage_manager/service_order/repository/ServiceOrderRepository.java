@@ -6,6 +6,7 @@ import io.quarkus.hibernate.orm.panache.PanacheQuery;
 import io.quarkus.hibernate.orm.panache.PanacheRepository;
 import jakarta.enterprise.context.ApplicationScoped;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @ApplicationScoped
@@ -21,4 +22,12 @@ public class ServiceOrderRepository implements PanacheRepository<ServiceOrder> {
     public List<ServiceOrder> findAllServiceOrders() {
         return listAll();
     }
+
+    public List<ServiceOrder> findByDate(int day, int month, int year) {
+        LocalDateTime start = LocalDateTime.of(year, month, day, 0, 0);
+        LocalDateTime end = start.plusDays(1);
+
+        return find("createdAt >= ?1 and createdAt < ?2", start, end).list();
+    }
+
 }
