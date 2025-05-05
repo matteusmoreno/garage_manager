@@ -37,4 +37,12 @@ public class ServiceOrderRepository implements PanacheRepository<ServiceOrder> {
         return find("createdAt >= ?1 and createdAt < ?2", start, end).list();
     }
 
+    public List<ServiceOrder> findByYear(int year) {
+        LocalDateTime start = LocalDateTime.of(year, 1, 1, 0, 0);
+        LocalDateTime end = start.plusYears(1);
+
+        return find("createdAt >= ?1 and createdAt < ?2", start, end).list();
+    }
+
+
 }

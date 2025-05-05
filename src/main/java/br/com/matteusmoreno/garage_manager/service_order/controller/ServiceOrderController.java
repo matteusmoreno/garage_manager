@@ -66,6 +66,14 @@ public class ServiceOrderController {
         return Response.ok(serviceOrders).build();
     }
 
+    @Path("/find-by-year/{year}")
+    @GET
+    public Response findByYear(int year) {
+        List<ServiceOrderDetailsResponse> serviceOrders = serviceOrderService.findServiceOrdersByYear(year);
+
+        return Response.ok(serviceOrders).build();
+    }
+
     @Path("/update")
     @PUT
     public Response update(@Valid UpdateServiceOrderRequest request) {

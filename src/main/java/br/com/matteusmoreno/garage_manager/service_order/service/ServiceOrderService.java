@@ -83,7 +83,7 @@ public class ServiceOrderService {
                 .map(ServiceOrderDetailsResponse::new)
                 .toList();
 
-        meterRegistry.counter("service_orders_found").increment();
+        meterRegistry.counter("all_service_orders_found").increment();
         return servicerOrdersResponse;
     }
 
@@ -95,7 +95,7 @@ public class ServiceOrderService {
                 .map(ServiceOrderDetailsResponse::new)
                 .toList();
 
-        meterRegistry.counter("service_orders_found").increment();
+        meterRegistry.counter("service_orders_found_by_day").increment();
         return servicerOrdersResponse;
     }
 
@@ -107,7 +107,19 @@ public class ServiceOrderService {
                 .map(ServiceOrderDetailsResponse::new)
                 .toList();
 
-        meterRegistry.counter("service_orders_found").increment();
+        meterRegistry.counter("service_orders_found_by_month").increment();
+        return servicerOrdersResponse;
+    }
+
+    @Transactional
+    public List<ServiceOrderDetailsResponse> findServiceOrdersByYear(int year) {
+        List<ServiceOrder> serviceOrders = serviceOrderRepository.findByYear(year);
+
+        List<ServiceOrderDetailsResponse> servicerOrdersResponse = serviceOrders.stream()
+                .map(ServiceOrderDetailsResponse::new)
+                .toList();
+
+        meterRegistry.counter("service_orders_found_by_year").increment();
         return servicerOrdersResponse;
     }
 
@@ -117,7 +129,7 @@ public class ServiceOrderService {
             meterRegistry.counter("service_order_not_found").increment();
             throw new ServiceOrderNotFoundException("Service order not found");
         }
-        meterRegistry.counter("service_order_found").increment();
+        meterRegistry.counter("service_order_found_by_id").increment();
         return serviceOrderRepository.findById(id);
     }
 
