@@ -75,6 +75,14 @@ public class ServiceOrderService {
     }
 
     @Transactional
+    public List<ServiceOrder> findAllServiceOrder() {
+        List<ServiceOrder> serviceOrders = serviceOrderRepository.findAllServiceOrders();
+
+        meterRegistry.counter("service_orders_found").increment();
+        return serviceOrders;
+    }
+
+    @Transactional
     public ServiceOrder findServiceOrderById(Long id) {
         if (serviceOrderRepository.findById(id) == null) {
             meterRegistry.counter("service_order_not_found").increment();

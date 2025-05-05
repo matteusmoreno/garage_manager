@@ -15,6 +15,7 @@ import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.UriInfo;
 
 import java.net.URI;
+import java.util.List;
 
 @Path("/service-orders")
 public class ServiceOrderController {
@@ -39,6 +40,13 @@ public class ServiceOrderController {
     public Response findById(Long id) {
         ServiceOrder serviceOrder = serviceOrderService.findServiceOrderById(id);
         return Response.ok(new ServiceOrderDetailsResponse(serviceOrder)).build();
+    }
+
+    @Path("/find-all")
+    @GET
+    public Response findAll() {
+        List<ServiceOrder> serviceOrders = serviceOrderService.findAllServiceOrder();
+        return Response.ok(serviceOrders).build();
     }
 
     @Path("/update")
