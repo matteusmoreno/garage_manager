@@ -100,6 +100,18 @@ public class ServiceOrderService {
     }
 
     @Transactional
+    public List<ServiceOrderDetailsResponse> findServiceOrdersByMonth(int month, int year) {
+        List<ServiceOrder> serviceOrders = serviceOrderRepository.findByMonthAndYear(month, year);
+
+        List<ServiceOrderDetailsResponse> servicerOrdersResponse = serviceOrders.stream()
+                .map(ServiceOrderDetailsResponse::new)
+                .toList();
+
+        meterRegistry.counter("service_orders_found").increment();
+        return servicerOrdersResponse;
+    }
+
+    @Transactional
     public ServiceOrder findServiceOrderById(Long id) {
         if (serviceOrderRepository.findById(id) == null) {
             meterRegistry.counter("service_order_not_found").increment();
