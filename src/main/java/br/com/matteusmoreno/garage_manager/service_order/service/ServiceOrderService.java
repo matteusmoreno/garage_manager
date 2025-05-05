@@ -76,11 +76,15 @@ public class ServiceOrderService {
     }
 
     @Transactional
-    public List<ServiceOrder> findAllServiceOrder() {
+    public List<ServiceOrderDetailsResponse> findAllServiceOrder() {
         List<ServiceOrder> serviceOrders = serviceOrderRepository.findAllServiceOrders();
 
+        List<ServiceOrderDetailsResponse> servicerOrdersResponse = serviceOrders.stream()
+                .map(ServiceOrderDetailsResponse::new)
+                .toList();
+
         meterRegistry.counter("service_orders_found").increment();
-        return serviceOrders;
+        return servicerOrdersResponse;
     }
 
     @Transactional

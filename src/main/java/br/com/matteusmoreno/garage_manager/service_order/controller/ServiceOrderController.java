@@ -46,7 +46,7 @@ public class ServiceOrderController {
     @Path("/find-all")
     @GET
     public Response findAll() {
-        List<ServiceOrder> serviceOrders = serviceOrderService.findAllServiceOrder();
+        List<ServiceOrderDetailsResponse> serviceOrders = serviceOrderService.findAllServiceOrder();
         return Response.ok(serviceOrders).build();
     }
 
