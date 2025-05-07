@@ -8,10 +8,41 @@ services:
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: garage_manager
     ports:
-      - "5433:5432" # Mapeando a porta 5432 do container para a 5433 na máquina host
+      - "5433:5432"
     volumes:
       - ./init.sql:/docker-entrypoint-initdb.d/init.sql
-      - postgres_data:/var/lib/postgresql/data # Persistência dos dados do banco
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - garage_manager_network
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U postgres -d garage_manager" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus-container
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+    ports:
+      - "9091:9090"
+    depends_on:
+      - garage-manager-app
+    networks:
+      - garage_manager_network
+
+  garage-manager-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: garage-manager-app-container
+    ports:
+      - "8080:8080"
+    depends_on:
+      postgres-db-garage-manager:
+        condition: service_healthy
     networks:
       - garage_manager_network
 
