@@ -43,5 +43,5 @@ jobs:
         with:
           task-definition: ecs-task-definition.json
           service: garagemanager-service
-          cluster: garage-manager-cluster
+          cluster: garagemanager-cluster
           wait-for-service-stability: true
