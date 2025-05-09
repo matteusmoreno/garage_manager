@@ -42,6 +42,6 @@ jobs:
         uses: aws-actions/amazon-ecs-deploy-task-definition@v1
         with:
           task-definition: ecs-task-definition.json
-          service: garage-manager-task-service-88x001ab
+          service: garage-manager-task-principal
           cluster: garage-manager-cluster
           wait-for-service-stability: true
