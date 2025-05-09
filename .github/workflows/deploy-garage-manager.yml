@@ -36,12 +36,12 @@ jobs:
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: us-east-1 # ou a região do seu cluster ECS
+          aws-region: us-east-2
 
       - name: Atualizar serviço no ECS
         uses: aws-actions/amazon-ecs-deploy-task-definition@v1
         with:
           task-definition: ecs-task-definition.json
-          service: garagemanager-service
-          cluster: garagemanager-cluster
+          service: garage-manager-task-service-88x001ab
+          cluster: garage-manager-cluster
           wait-for-service-stability: true
