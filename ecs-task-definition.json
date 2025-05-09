@@ -3,7 +3,7 @@
   "containerDefinitions": [
     {
       "name": "garage-manager-container",
-      "image": "SEU_USUARIO_DOCKER_HUB/garagemanager:latest",
+      "image": "matteusmoreno/garagemanager:latest",
       "memory": 512,
       "cpu": 256,
       "essential": true,
