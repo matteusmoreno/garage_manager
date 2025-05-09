@@ -1,0 +1,22 @@
+{
+  "family": "garagemanager-task",
+  "networkMode": "awsvpc",
+  "requiresCompatibilities": ["FARGATE"],
+  "cpu": "512",
+  "memory": "1024",
+  "containerDefinitions": [
+    {
+      "name": "garagemanager",
+      "image": "matteusmoreno/garagemanager:latest",
+      "essential": true,
+      "portMappings": [
+        {
+          "containerPort": 8080,
+          "hostPort": 8080,
+          "protocol": "tcp"
+        }
+      ]
+    }
+  ],
+  "executionRoleArn": "arn:aws:iam::269854564275:role/ecsTaskExecutionRole"
+}
