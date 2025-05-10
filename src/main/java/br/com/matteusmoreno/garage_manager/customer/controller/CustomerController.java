@@ -10,10 +10,12 @@ import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.UriInfo;
+import org.eclipse.microprofile.openapi.annotations.security.SecurityRequirement;
 
 import java.net.URI;
 import java.util.UUID;
 
+@SecurityRequirement(name = "SecurityScheme")
 @Path("/customers")
 public class CustomerController {
 
