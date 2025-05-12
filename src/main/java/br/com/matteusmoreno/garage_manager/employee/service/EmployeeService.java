@@ -32,21 +32,10 @@ public class EmployeeService {
 
     @Transactional
     public Employee createEmployee(CreateEmployeeRequest request) {
-        if (!utilsService.cpfValidation(request.cpf())) {
-            throw new CpfInvalidException("Invalid CPF");
-        }
-
-        if (!utilsService.dateValidation(request.birthDate())) {
-            throw new InvalidDateException("Invalid date");
-        }
-
-        if (employeeRepository.existsByCpfOrEmail(request.cpf(), request.email())) {
-            throw new EmployeeAlreadyExistsException("Employee already exists with the provided CPF or email");
-        }
-
-        if (employeeRepository.existsByUsername(request.username())) {
-            throw new UsernameAlreadyExistsException("Username already exists");
-        }
+        if (!utilsService.cpfValidation(request.cpf())) throw new CpfInvalidException("Invalid CPF");
+        if (!utilsService.dateValidation(request.birthDate())) throw new InvalidDateException("Invalid date");
+        if (employeeRepository.existsByCpfOrEmail(request.cpf(), request.email())) throw new EmployeeAlreadyExistsException("Employee already exists with the provided CPF or email");
+        if (employeeRepository.existsByUsername(request.username())) throw new UsernameAlreadyExistsException("Username already exists");
 
         Integer age = utilsService.calculateAge(request.birthDate());
         Address address = addressService.createAddress(request.zipCode(), request.addressNumber(), request.addressComplement());

@@ -37,14 +37,8 @@ public class CustomerService {
 
     @Transactional
     public Customer createCustomer(CreateCustomerRequest request) {
-        if (!utilsService.cpfValidation(request.cpf())) {
-            throw new CpfInvalidException("Invalid CPF");
-        }
-
-        if (!utilsService.dateValidation(request.birthDate())) {
-            throw new InvalidDateException("Invalid date");
-        }
-
+        if (!utilsService.cpfValidation(request.cpf())) throw new CpfInvalidException("Invalid CPF");
+        if (!utilsService.dateValidation(request.birthDate())) throw new InvalidDateException("Invalid date");
         if (customerRepository.existsByCpfOrEmail(request.cpf(), request.email())) {
             meterRegistry.counter("customer_exists").increment();
             throw new CustomerAlreadyExistsException("Customer already exists with the provided CPF or email");

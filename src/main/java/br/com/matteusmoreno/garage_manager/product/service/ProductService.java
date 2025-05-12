@@ -84,24 +84,12 @@ public class ProductService {
     public Product updateProduct(UpdateProductRequest request) {
         Product product = findProductById(request.id());
 
-        if (request.name() != null) {
-            product.setName(request.name());
-        }
-        if (request.description() != null) {
-            product.setDescription(request.description());
-        }
-        if (request.brand() != null) {
-            product.setBrand(request.brand().toUpperCase());
-        }
-        if (request.purchasePrice() != null) {
-            product.setPurchasePrice(request.purchasePrice());
-        }
-        if (request.salePrice() != null) {
-            product.setSalePrice(request.salePrice());
-        }
-        if (request.stockQuantity() != null) {
-            product.setStockQuantity(request.stockQuantity());
-        }
+        if (request.name() != null) product.setName(request.name());
+        if (request.description() != null) product.setDescription(request.description());
+        if (request.brand() != null) product.setBrand(request.brand().toUpperCase());
+        if (request.purchasePrice() != null) product.setPurchasePrice(request.purchasePrice());
+        if (request.salePrice() != null) product.setSalePrice(request.salePrice());
+        if (request.stockQuantity() != null) product.setStockQuantity(request.stockQuantity());
 
         meterRegistry.counter("product_updated").increment();
 

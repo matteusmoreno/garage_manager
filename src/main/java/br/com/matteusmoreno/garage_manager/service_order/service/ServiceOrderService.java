@@ -170,7 +170,6 @@ public class ServiceOrderService {
             serviceOrder.setTotalCost(totalCost);
         }
 
-
         if (request.description() != null) {
             serviceOrder.setDescription(request.description());
         }
@@ -225,5 +224,4 @@ public class ServiceOrderService {
         serviceOrderRepository.persist(serviceOrder);
         return serviceOrder;
     }
-
 }
