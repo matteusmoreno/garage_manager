@@ -1,25 +1,25 @@
 services:
 
-  postgres-db-garage-manager:
-    image: postgres:14
-    container_name: postgres-db-garage-manager-container
-    environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: garage_manager
-    ports:
-      - "5433:5432"
-    volumes:
-      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
-      - postgres_data:/var/lib/postgresql/data
-    networks:
-      - garage_manager_network
-    healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -U postgres -d garage_manager" ]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-      start_period: 10s
+#  postgres-db-garage-manager:
+#    image: postgres:14
+#    container_name: postgres-db-garage-manager-container
+#    environment:
+#      POSTGRES_USER: postgres
+#      POSTGRES_PASSWORD: postgres
+#      POSTGRES_DB: garage_manager
+#    ports:
+#      - "5433:5432"
+#    volumes:
+#      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+#      - postgres_data:/var/lib/postgresql/data
+#    networks:
+#      - garage_manager_network
+#    healthcheck:
+#      test: [ "CMD-SHELL", "pg_isready -U postgres -d garage_manager" ]
+#      interval: 10s
+#      timeout: 5s
+#      retries: 5
+#      start_period: 10s
 
   prometheus:
     image: prom/prometheus:latest
@@ -34,15 +34,10 @@ services:
       - garage_manager_network
 
   garage-manager-app:
-    build:
-      context: .
-      dockerfile: Dockerfile
+    image: matteusmoreno/garagemanager:latest
     container_name: garage-manager-app-container
     ports:
       - "8080:8080"
-    depends_on:
-      postgres-db-garage-manager:
-        condition: service_healthy
     networks:
       - garage_manager_network
 
