@@ -193,6 +193,10 @@ public class ServiceOrderService {
     public ServiceOrder startServiceOrder(Long id) {
         ServiceOrder serviceOrder = serviceOrderRepository.findById(id);
 
+        if (serviceOrder.getServiceOrderStatus() != ServiceOrderStatus.PENDING) {
+            throw new IllegalStateException("Service order is not in a state to be started");
+        }
+
         serviceOrder.setServiceOrderStatus(ServiceOrderStatus.IN_PROGRESS);
         serviceOrder.setStartedAt(LocalDateTime.now());
 
@@ -205,6 +209,10 @@ public class ServiceOrderService {
     public ServiceOrder completeServiceOrder(Long id) {
         ServiceOrder serviceOrder = serviceOrderRepository.findById(id);
 
+        if (serviceOrder.getServiceOrderStatus() != ServiceOrderStatus.IN_PROGRESS) {
+            throw new IllegalStateException("Service order is not in a state to be completed");
+        }
+
         serviceOrder.setFinishedAt(LocalDateTime.now());
         serviceOrder.setServiceOrderStatus(ServiceOrderStatus.COMPLETED);
 
@@ -216,6 +224,10 @@ public class ServiceOrderService {
     @Transactional
     public ServiceOrder cancelServiceOrder(Long id) {
         ServiceOrder serviceOrder = serviceOrderRepository.findById(id);
+
+        if (serviceOrder.getServiceOrderStatus() == ServiceOrderStatus.CANCELED) {
+            throw new IllegalStateException("Service order is already canceled");
+        }
 
         serviceOrder.setCanceledAt(LocalDateTime.now());
         serviceOrder.setServiceOrderStatus(ServiceOrderStatus.CANCELED);
