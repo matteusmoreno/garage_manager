@@ -34,6 +34,15 @@ public class ProductController {
         return Response.created(uri).entity(new ProductDetailsResponse(product)).build();
     }
 
+    @POST
+    @Path("/create-multiple")
+    public Response createMultiple(@Valid List<CreateProductRequest> requests, @Context UriInfo uriInfo) {
+        List<Product> products = productService.createProducts(requests);
+        URI uri = uriInfo.getAbsolutePathBuilder().build();
+
+        return Response.created(uri).entity(products.stream().map(ProductDetailsResponse::new)).build();
+    }
+
     @GET
     @Path("/find-by-id/{id}")
     public Response findById(Long id) {

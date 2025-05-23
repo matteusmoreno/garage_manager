@@ -47,6 +47,29 @@ public class ProductService {
         return product;
     }
 
+    @Transactional
+    public List<Product> createProducts(List<CreateProductRequest> requests) {
+        List<Product> products = requests.stream()
+                .map(request -> Product.builder()
+                        .name(request.name())
+                        .description(request.description())
+                        .brand(request.brand().toUpperCase())
+                        .purchasePrice(request.purchasePrice())
+                        .salePrice(request.salePrice())
+                        .stockQuantity(request.stockQuantity())
+                        .createdAt(LocalDateTime.now())
+                        .updatedAt(null)
+                        .deletedAt(null)
+                        .isActive(true)
+                        .build())
+                .toList();
+
+        meterRegistry.counter("products_created").increment();
+
+        productRepository.persist(products);
+        return products;
+    }
+
     public Product findProductById(Long id) {
         if (productRepository.findById(id) == null) {
             meterRegistry.counter("product_not_found").increment();
