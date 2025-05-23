@@ -2,6 +2,7 @@ package br.com.matteusmoreno.garage_manager.service_order.service;
 
 import br.com.matteusmoreno.garage_manager.employee.entity.Employee;
 import br.com.matteusmoreno.garage_manager.employee.repository.EmployeeRepository;
+import br.com.matteusmoreno.garage_manager.exception.exception_class.InvalidServiceOrderStatusException;
 import br.com.matteusmoreno.garage_manager.exception.exception_class.ServiceOrderNotFoundException;
 import br.com.matteusmoreno.garage_manager.motorcycle.entity.Motorcycle;
 import br.com.matteusmoreno.garage_manager.motorcycle.repository.MotorcycleRepository;
@@ -194,7 +195,7 @@ public class ServiceOrderService {
         ServiceOrder serviceOrder = serviceOrderRepository.findById(id);
 
         if (serviceOrder.getServiceOrderStatus() != ServiceOrderStatus.PENDING) {
-            throw new IllegalStateException("Service order is not in a state to be started");
+            throw new InvalidServiceOrderStatusException("Service order is not in a state to be started");
         }
 
         serviceOrder.setServiceOrderStatus(ServiceOrderStatus.IN_PROGRESS);
@@ -210,7 +211,7 @@ public class ServiceOrderService {
         ServiceOrder serviceOrder = serviceOrderRepository.findById(id);
 
         if (serviceOrder.getServiceOrderStatus() != ServiceOrderStatus.IN_PROGRESS) {
-            throw new IllegalStateException("Service order is not in a state to be completed");
+            throw new InvalidServiceOrderStatusException("Service order is not in a state to be completed");
         }
 
         serviceOrder.setFinishedAt(LocalDateTime.now());
@@ -226,7 +227,7 @@ public class ServiceOrderService {
         ServiceOrder serviceOrder = serviceOrderRepository.findById(id);
 
         if (serviceOrder.getServiceOrderStatus() == ServiceOrderStatus.CANCELED) {
-            throw new IllegalStateException("Service order is already canceled");
+            throw new InvalidServiceOrderStatusException("Service order is already canceled");
         }
 
         serviceOrder.setCanceledAt(LocalDateTime.now());
